@@ -1,6 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
+import { SocialLoginReqDto } from './dtos/socialLogin.dto';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -10,12 +11,12 @@ export class AuthController {
   ) { }
 
   @Post('social-login')
-  async socialLogin() {
-
+  async socialLogin(@Body() socialLoginReqDto: SocialLoginReqDto) {
+    
   }
 
   @Post('regiser')
-  async register(@Body() registerRequestDto: any) {
+  async register(@Body() registerReqDto: any) {
 
   }
 
