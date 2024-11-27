@@ -13,7 +13,10 @@ export class UserService {
 
   async getOrCreateUser(oauthId: string) {
     let user = await this.userRepository.findOne({ where: { oauthId } });
-    if (!user) user = this.userRepository.create({ oauthId });
+    if (!user) {
+      user = this.userRepository.create({ oauthId });
+      await this.userRepository.save(user);
+    }
 
     return user;
   }

@@ -15,12 +15,12 @@ export class AuthController {
   @Post('social-login')
   async socialLogin(@Body() socialLoginReqDto: SocialLoginReqDto, @Res() res: Response) {
     const { id, isOnboarding } = await this.authService.socialLogin(socialLoginReqDto);
-    if (isOnboarding){
+    if (!isOnboarding) {
       const refreshToken = await this.authService.generateRefreshToken(id);
       res.cookie('refresh-token', refreshToken, CookieConfig.refreshToken);
     }
 
-    return isOnboarding;
+    return res.json({ isOnboarding });
   }
 
   @Post('regiser')

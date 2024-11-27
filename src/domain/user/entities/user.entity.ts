@@ -15,12 +15,12 @@ export class User {
   @Column({ type: "varchar", nullable: true })
   phone: string;
 
-  @Column({ type: "varchar", length: 10 })
+  @Column({ type: "varchar", length: 10, nullable: true })
   bank: string;
 
   @Column({ type: "varchar", nullable: true })
   account: string;
 
-  @Column({ default: false })
+  @Column({ default: true })
   isOnboarding: boolean;
 }
