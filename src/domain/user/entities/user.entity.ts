@@ -9,13 +9,13 @@ export class User {
   @Column({ type: "varchar", length: 60 })
   oauthId: string;
 
-  @Column({ type: "varchar", length: 50 })
+  @Column({ type: "varchar", length: 50, nullable: true })
   name: string;
 
-  @Column({ type: "varchar" })
+  @Column({ type: "varchar", nullable: true })
   phone: string;
 
-  @Column({ type: "varchar" })
+  @Column({ type: "varchar", nullable: true })
   account: string;
 
   @Column({ default: false })
