@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Req } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SocialLoginReqDto } from './dtos/socialLogin.dto';
@@ -11,8 +11,11 @@ export class AuthController {
   ) { }
 
   @Post('social-login')
-  async socialLogin(@Body() socialLoginReqDto: SocialLoginReqDto) {
+  async socialLogin(@Body() socialLoginReqDto: SocialLoginReqDto, @Req() req: Request) {
     const isOnboarding = await this.authService.socialLogin(socialLoginReqDto);
+    if (isOnboarding){
+
+    }
 
     return isOnboarding;
   }
