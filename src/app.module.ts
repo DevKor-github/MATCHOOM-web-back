@@ -1,5 +1,9 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config'
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
+import { JwtModule } from '@nestjs/jwt';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { AppService } from './app.service';
 import { StudioModule } from './domain/studio/studio.module';
 import { LectureModule } from './domain/lecture/lecture.module';
@@ -8,8 +12,25 @@ import { AuthModule } from './application/auth/auth.module';
 import { S3Module } from './application/s3/s3.module';
 
 @Module({
-  imports: [StudioModule, LectureModule, UserModule, AuthModule, S3Module],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: process.env.DB_HOST,
+      port: +process.env.DB_PORT,
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_DATABASE,
+      entities: [__dirname + '/entities/**/*.entity{.ts,.js}'],
+      synchronize: true,
+      namingStrategy: new SnakeNamingStrategy()
+    }),
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: process.env.JWT_EXPIRES_IN }
+    }),
+    StudioModule, LectureModule, UserModule, AuthModule, S3Module],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
