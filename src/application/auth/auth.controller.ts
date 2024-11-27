@@ -12,7 +12,9 @@ export class AuthController {
 
   @Post('social-login')
   async socialLogin(@Body() socialLoginReqDto: SocialLoginReqDto) {
-    
+    const isOnboarding = await this.authService.socialLogin(socialLoginReqDto);
+
+    return isOnboarding;
   }
 
   @Post('regiser')
