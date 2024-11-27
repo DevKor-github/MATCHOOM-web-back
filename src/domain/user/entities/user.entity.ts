@@ -15,6 +15,9 @@ export class User {
   @Column({ type: "varchar", nullable: true })
   phone: string;
 
+  @Column({ type: "varchar", length: 10 })
+  bank: string;
+
   @Column({ type: "varchar", nullable: true })
   account: string;
 
