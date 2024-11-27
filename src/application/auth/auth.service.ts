@@ -27,7 +27,7 @@ export class AuthService {
     }
     const user = await this.userService.getOrCreateUser(oauthId);
 
-    return { isOnboarding: user.isOnboarding };
+    return { id: user.id, isOnboarding: user.isOnboarding };
   }
 
   generateAccessToken(id: number): string {
