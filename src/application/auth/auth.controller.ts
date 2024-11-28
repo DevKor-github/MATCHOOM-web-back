@@ -26,7 +26,7 @@ export class AuthController {
     return res.json({ isOnboarding });
   }
 
-  @Post('regiser')
+  @Post('register')
   async register(@Body() registerReqDto: RegisterReqDto, @Req() req: Request, @Res() res: Response) {
     const id = req.cookies['sub'];
     const { accessToken, refreshToken } = await this.authService.register(id, registerReqDto);
