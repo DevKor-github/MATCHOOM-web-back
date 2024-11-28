@@ -43,6 +43,7 @@ export class AuthController {
 
   @Post('refresh-token')
   @UseGuards(AuthGuard('jwt-refresh'))
+  @Docs('refresh-token')
   async renewToken(@Req() req: any) {
     const id = req.user.id;
     return await this.authService.renewToken(id);
@@ -50,6 +51,7 @@ export class AuthController {
 
   @Post('logout')
   @UseGuards(AuthGuard('jwt-refresh'))
+  @Docs('logout')
   async logout(@Res() res: Response) {
     res.clearCookie('refresh-token', CookieConfig.tokenDelete);
     
