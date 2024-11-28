@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 import { SocialLoginReqDto } from './dtos/socialLogin.dto';
 import { CookieConfig } from './configs/cookie.config';
 import { RegisterReqDto } from './dtos/register.dto';
+import { Docs } from './docs/auth.decorator';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -14,6 +15,7 @@ export class AuthController {
   ) { }
 
   @Post('social-login')
+  @Docs('social-login')
   async socialLogin(@Body() socialLoginReqDto: SocialLoginReqDto, @Res() res: Response) {
     const { id, isOnboarding } = await this.authService.socialLogin(socialLoginReqDto);
     if (!isOnboarding) {
@@ -27,6 +29,7 @@ export class AuthController {
   }
 
   @Post('register')
+  @Docs('register')
   async register(@Body() registerReqDto: RegisterReqDto, @Req() req: Request, @Res() res: Response) {
     const id = req.cookies['sub'];
     const { accessToken, refreshToken } = await this.authService.register(id, registerReqDto);
