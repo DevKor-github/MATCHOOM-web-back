@@ -49,7 +49,10 @@ export class AuthController {
   }
 
   @Post('logout')
-  async logout() {
-
+  @UseGuards(AuthGuard('jwt-refresh'))
+  async logout(@Res() res: Response) {
+    res.clearCookie('refresh-token', CookieConfig.refreshToken);
+    
+    return res.send();
   }
 }
