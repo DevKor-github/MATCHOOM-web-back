@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
 
 @Entity()
 @Unique(['oauthId', 'phone'])
@@ -23,4 +23,7 @@ export class User {
 
   @Column({ default: true })
   isOnboarding: boolean;
+
+  @CreateDateColumn({ default: true })
+  createdAt: Date;
 }
