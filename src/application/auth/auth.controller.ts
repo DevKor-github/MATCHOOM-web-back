@@ -1,6 +1,6 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Body, Controller, Post, Req, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { SocialLoginReqDto } from './dtos/socialLogin.dto';
 import { CookieConfig } from './configs/cookie.config';
@@ -19,14 +19,22 @@ export class AuthController {
     if (!isOnboarding) {
       const refreshToken = await this.authService.generateRefreshToken(id);
       res.cookie('refresh-token', refreshToken, CookieConfig.refreshToken);
+    } else {
+      res.cookie('sub', id, CookieConfig.onboardingToken);
     }
 
     return res.json({ isOnboarding });
   }
 
   @Post('regiser')
-  async register(@Body() registerReqDto: RegisterReqDto) {
+  async register(@Body() registerReqDto: RegisterReqDto, @Req() req: Request, @Res() res: Response) {
+    const id = req.cookies['sub'];
+    const { accessToken, refreshToken } = await this.authService.register(id, registerReqDto);
 
+    res.clearCookie('sub', CookieConfig.onboardingToken);
+    res.cookie('refresh-token', refreshToken, CookieConfig.refreshToken);
+
+    return res.json({ accessToken });
   }
 
   @Post('refresh-token')

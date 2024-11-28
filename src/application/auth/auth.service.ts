@@ -20,7 +20,7 @@ export class AuthService {
   async register(id: number, registerReqDto: RegisterReqDto) {
     await this.userService.updateUser(id, registerReqDto);
     const tokens = await this.generateTokens(id);
-
+    
     return tokens;
   }
 

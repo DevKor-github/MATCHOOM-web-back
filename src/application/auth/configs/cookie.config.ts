@@ -13,4 +13,9 @@ export const CookieConfig = {
     sameSite: 'none',
     expires: new Date(Date.now() + 24 * 60 * 60 * 1000 * 30),
   } as CookieOptions,
+  onboardingToken: {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none',
+  } as CookieOptions
 };
