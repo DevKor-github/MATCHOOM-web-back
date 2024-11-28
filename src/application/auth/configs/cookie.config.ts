@@ -17,5 +17,10 @@ export const CookieConfig = {
     httpOnly: true,
     secure: true,
     sameSite: 'none',
+  } as CookieOptions,
+  tokenDelete: {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none',
   } as CookieOptions
 };

@@ -35,7 +35,7 @@ export class AuthController {
     const id = req.cookies['sub'];
     const { accessToken, refreshToken } = await this.authService.register(id, registerReqDto);
 
-    res.clearCookie('sub', CookieConfig.onboardingToken);
+    res.clearCookie('sub', CookieConfig.tokenDelete);
     res.cookie('refresh-token', refreshToken, CookieConfig.refreshToken);
 
     return res.json({ accessToken });
@@ -51,7 +51,7 @@ export class AuthController {
   @Post('logout')
   @UseGuards(AuthGuard('jwt-refresh'))
   async logout(@Res() res: Response) {
-    res.clearCookie('refresh-token', CookieConfig.refreshToken);
+    res.clearCookie('refresh-token', CookieConfig.tokenDelete);
     
     return res.send();
   }

@@ -33,6 +33,7 @@ export class UserService {
     user.phone = phone || user.phone;
     user.bank = bank || user.bank;
     user.account = account || user.account;
+    user.isOnboarding = false
 
     await this.userRepository.save(user);
 
