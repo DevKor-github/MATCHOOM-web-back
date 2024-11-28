@@ -23,4 +23,9 @@ class RegisterReqDto {
   account?: string;
 }
 
-export { RegisterReqDto }
+class RegisterResDto {
+  @ApiProperty({ example: "xxxx.xxxx.xxxx" })
+  accessToken: string;
+}
+
+export { RegisterReqDto, RegisterResDto }
