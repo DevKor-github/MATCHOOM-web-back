@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { SocialLoginReqDto } from './dtos/socialLogin.dto';
 import axios from 'axios';
 import { UserService } from 'src/domain/user/user.service';
+import { RegisterReqDto } from './dtos/register.dto';
 
 @Injectable()
 export class AuthService {
@@ -13,8 +14,12 @@ export class AuthService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private userService: UserService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
   ) { }
+
+  async register(registerReqDto: RegisterReqDto) {
+    
+  }
 
   async socialLogin(socialLoginReqDto: SocialLoginReqDto) {
     const { code, provider } = socialLoginReqDto;

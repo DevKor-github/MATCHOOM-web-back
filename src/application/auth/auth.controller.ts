@@ -4,6 +4,7 @@ import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { SocialLoginReqDto } from './dtos/socialLogin.dto';
 import { CookieConfig } from './configs/cookie.config';
+import { RegisterReqDto } from './dtos/register.dto';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -24,7 +25,7 @@ export class AuthController {
   }
 
   @Post('regiser')
-  async register(@Body() registerReqDto: any) {
+  async register(@Body() registerReqDto: RegisterReqDto) {
 
   }
 
