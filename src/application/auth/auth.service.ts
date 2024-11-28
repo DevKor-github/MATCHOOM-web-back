@@ -17,8 +17,11 @@ export class AuthService {
     private jwtService: JwtService,
   ) { }
 
-  async register(registerReqDto: RegisterReqDto) {
-    
+  async register(id: number, registerReqDto: RegisterReqDto) {
+    await this.userService.updateUser(id, registerReqDto);
+    const tokens = await this.generateTokens(id);
+
+    return tokens;
   }
 
   async socialLogin(socialLoginReqDto: SocialLoginReqDto) {
@@ -53,6 +56,13 @@ export class AuthService {
     });
 
     return refreshToken;
+  }
+
+  async generateTokens(id: number) {
+    const accessToken = this.generateAccessToken(id);
+    const refreshToken = await this.generateRefreshToken(id);
+
+    return { accessToken, refreshToken };
   }
 
   private async getKakaoToken(code: string): Promise<string> {
