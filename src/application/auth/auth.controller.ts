@@ -7,6 +7,7 @@ import { CookieConfig } from './configs/cookie.config';
 import { RegisterReqDto } from './dtos/register.dto';
 import { Docs } from './docs/auth.decorator';
 import { AuthGuard } from '@nestjs/passport';
+import { SocialLoginGuard } from './guards/socialLogin.guard';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -16,9 +17,12 @@ export class AuthController {
   ) { }
 
   @Post('social-login')
+  @UseGuards(SocialLoginGuard)
   @Docs('social-login')
-  async socialLogin(@Body() socialLoginReqDto: SocialLoginReqDto, @Res() res: Response) {
-    const { id, isOnboarding } = await this.authService.socialLogin(socialLoginReqDto);
+  async socialLogin(@Body() socialLoginReqDto: SocialLoginReqDto, @Res() res: Response, @Req() req: any) {
+    const oauthId = req.oauthId;
+    const { id, isOnboarding } = await this.authService.socialLogin(oauthId);
+    // const { id, isOnboarding } = await this.authService.socialLogin(socialLoginReqDto);
     if (!isOnboarding) {
       const refreshToken = await this.authService.generateRefreshToken(id);
       res.cookie('refresh-token', refreshToken, CookieConfig.refreshToken);

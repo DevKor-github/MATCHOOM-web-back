@@ -6,13 +6,15 @@ import { AuthController } from './auth.controller';
 import { UserService } from 'src/domain/user/user.service';
 import { User } from 'src/domain/user/entities/user.entity';
 import { JwtRefreshStrategy } from './strategies/jwtRefresh.strategy';
+import { KakaoStrategy } from './strategies/kakao.strategy';
+import { SocialLoginGuard } from './guards/socialLogin.guard';
 
 @Module({
   imports:[
     TypeOrmModule.forFeature([User]),
     JwtModule.register({})
   ],
-  providers: [AuthService, UserService, JwtRefreshStrategy],
+  providers: [AuthService, UserService, JwtRefreshStrategy, KakaoStrategy, SocialLoginGuard],
   controllers: [AuthController]
 })
 export class AuthModule {}

@@ -30,7 +30,8 @@ export class AuthService {
     return { accessToken };
   } 
 
-  async socialLogin(socialLoginReqDto: SocialLoginReqDto) {
+  async socialLogin(oauthId: string) {
+    /*
     const { code, provider } = socialLoginReqDto;
     let oauthId = "";
 
@@ -39,6 +40,7 @@ export class AuthService {
         const kakaoToken = await this.getKakaoToken(code);
         oauthId = (await this.getKakaoUserInfo(kakaoToken)).toString();
     }
+        */
     const user = await this.userService.getOrCreateUser(oauthId);
 
     return { id: user.id, isOnboarding: user.isOnboarding };

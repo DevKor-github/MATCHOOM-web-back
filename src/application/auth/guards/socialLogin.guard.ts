@@ -1,23 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { ExecutionContext, CanActivate } from '@nestjs/common';
-import { KakaoStrategy } from '../strategies/kakao.strategy';
+import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
 export class SocialLoginGuard implements CanActivate {
-  constructor(
-    private readonly kakaoLoginStrategy: KakaoStrategy,
-  ) { }
+  constructor( ) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest();
     const provider = req.body.provider;
+    const guard = this.getGuardbyProvider(provider);
 
+    return guard.canActivate(context) as Promise<boolean>;
+  }
+
+  private getGuardbyProvider(provider: string) {
     switch (provider) {
-      case "kakao":
-        await this.kakaoLoginStrategy.authenticate(req);
-        return true;
+      case 'kakao':
+        return new (AuthGuard('kakao'))();
       default:
-        throw new Error('지원하지 않는 형식의 로그인 입니다.');
+        return null;
     }
   }
 }
