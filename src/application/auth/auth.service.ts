@@ -1,10 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/domain/user/entities/user.entity';
 import { Repository } from 'typeorm';
-import { SocialLoginReqDto } from './dtos/socialLogin.dto';
-import axios from 'axios';
 import { UserService } from 'src/domain/user/user.service';
 import { RegisterReqDto } from './dtos/register.dto';
 
@@ -31,16 +29,6 @@ export class AuthService {
   } 
 
   async socialLogin(oauthId: string) {
-    /*
-    const { code, provider } = socialLoginReqDto;
-    let oauthId = "";
-
-    switch (provider) {
-      case 'kakao':
-        const kakaoToken = await this.getKakaoToken(code);
-        oauthId = (await this.getKakaoUserInfo(kakaoToken)).toString();
-    }
-        */
     const user = await this.userService.getOrCreateUser(oauthId);
 
     return { id: user.id, isOnboarding: user.isOnboarding };
@@ -71,32 +59,5 @@ export class AuthService {
     const refreshToken = await this.generateRefreshToken(id);
 
     return { accessToken, refreshToken };
-  }
-
-  private async getKakaoToken(code: string): Promise<string> {
-    const params = {
-      grant_type: 'authorization_code',
-      client_id: process.env.KAKAO_CLIENT_ID,
-      redirect_uri: process.env.KAKAO_CALLBACK_URL,
-      code: code
-    }
-    const headers = { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8' };
-    const res = await axios.post('https://kauth.kakao.com/oauth/token', {}, { params, headers });
-    if (!res) throw new BadRequestException('Kakao access token을 가져오는데 실패 했습니다.');
-
-    const kakaoToken = res.data.access_token;
-    if (!kakaoToken) throw new UnauthorizedException("Kakao access token을 가져오는데 실패 했습니다.");
-
-    return kakaoToken;
-  }
-
-  private async getKakaoUserInfo(kakaoToken): Promise<string> {
-    const res = await axios.get('https://kapi.kakao.com/v2/user/me', { headers: { Authorization: `Bearer ${kakaoToken}` } });
-    if (!res) new UnauthorizedException("소셜 로그인 계정 정보를 불러올 수 없습니다.");
-
-    const id = res.data.id;
-    if (!id) throw new NotFoundException("존재하지 않는 소셜 로그인 유저 입니다.");
-
-    return id;
   }
 }

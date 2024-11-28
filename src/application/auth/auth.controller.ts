@@ -8,21 +8,22 @@ import { RegisterReqDto } from './dtos/register.dto';
 import { Docs } from './docs/auth.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { SocialLoginGuard } from './guards/socialLogin.guard';
+import { UserService } from 'src/domain/user/user.service';
 
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
   constructor(
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private readonly userService: UserService
   ) { }
 
   @Post('social-login')
   @UseGuards(SocialLoginGuard)
   @Docs('social-login')
-  async socialLogin(@Body() socialLoginReqDto: SocialLoginReqDto, @Res() res: Response, @Req() req: any) {
+  async socialLogin(@Res() res: Response, @Req() req: any) {
     const oauthId = req.oauthId;
-    const { id, isOnboarding } = await this.authService.socialLogin(oauthId);
-    // const { id, isOnboarding } = await this.authService.socialLogin(socialLoginReqDto);
+    const { id, isOnboarding } = await this.userService.getOrCreateUser(oauthId);
     if (!isOnboarding) {
       const refreshToken = await this.authService.generateRefreshToken(id);
       res.cookie('refresh-token', refreshToken, CookieConfig.refreshToken);
