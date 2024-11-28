@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
@@ -6,6 +6,7 @@ import { SocialLoginReqDto } from './dtos/socialLogin.dto';
 import { CookieConfig } from './configs/cookie.config';
 import { RegisterReqDto } from './dtos/register.dto';
 import { Docs } from './docs/auth.decorator';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -41,8 +42,10 @@ export class AuthController {
   }
 
   @Post('refresh-token')
-  async renewToken() {
-    
+  @UseGuards(AuthGuard('jwt-refresh'))
+  async renewToken(@Req() req: any) {
+    const id = req.user.id;
+    return await this.authService.renewToken(id);
   }
 
   @Post('logout')

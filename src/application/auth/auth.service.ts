@@ -24,6 +24,12 @@ export class AuthService {
     return tokens;
   }
 
+  async renewToken(id: number) {
+    const accessToken = this.generateAccessToken(id);
+
+    return { accessToken };
+  } 
+
   async socialLogin(socialLoginReqDto: SocialLoginReqDto) {
     const { code, provider } = socialLoginReqDto;
     let oauthId = "";
@@ -39,7 +45,7 @@ export class AuthService {
   }
 
   generateAccessToken(id: number): string {
-    const payload = { id };
+    const payload = { sub: id };
     const accessToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_ACCESS_SECRET,
       expiresIn: process.env.JWT_ACCESS_EXPIRES_IN,
@@ -49,7 +55,7 @@ export class AuthService {
   }
 
   async generateRefreshToken(id: number): Promise<string> {
-    const payload = { id };
+    const payload = { sub: id };
     const refreshToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_REFRESH_SECRET,
       expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
