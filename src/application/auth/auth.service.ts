@@ -26,12 +26,6 @@ export class AuthService {
     const accessToken = this.generateAccessToken(id);
 
     return { accessToken };
-  } 
-
-  async socialLogin(oauthId: string) {
-    const user = await this.userService.getOrCreateUser(oauthId);
-
-    return { id: user.id, isOnboarding: user.isOnboarding };
   }
 
   generateAccessToken(id: number): string {
