@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsOptional, IsString } from "class-validator";
+import { IsOptional, IsString, Length } from "class-validator";
 
 export class UpdateUserDto {
   @IsString()
@@ -19,6 +19,7 @@ export class UpdateUserDto {
 
   @IsString()
   @IsOptional()
+  @Length(10, 14)
   @ApiProperty({ example: "3333333333333" })
   account?: string;
 }
