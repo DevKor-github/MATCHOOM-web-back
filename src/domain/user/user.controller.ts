@@ -4,7 +4,7 @@ import { UserService } from './user.service';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateUserDto } from './dtos/updateUser.dto';
 import { User } from 'src/common/decorators/user.decorator';
-import { UserPayload } from 'src/common/interfaces/user.payload';
+import { UserPayload } from 'src/common/interfaces/user.interface';
 
 @Controller('user')
 @ApiTags('user')
@@ -28,7 +28,8 @@ export class UserController {
 
   @Delete()
   @UseGuards(AuthGuard('jwt-refresh'))
-  async deleteUser() {
-
+  async deleteUser(@User() user: UserPayload) {
+    const id = user.id;
+    return await this.userService.deleteUser(id);
   }
 }

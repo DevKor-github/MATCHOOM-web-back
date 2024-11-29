@@ -39,4 +39,13 @@ export class UserService {
 
     return { message: "유저 정보 수정 성공" };
   }
+
+  async deleteUser(id: number) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) throw new NotFoundException("존재하지 않는 사용자 입니다.");
+
+    await this.userRepository.delete(id);
+
+    return { message: "회원 탈퇴 성공" };
+  }
 }
