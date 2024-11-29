@@ -23,7 +23,7 @@ export class UserController {
   @UseGuards(AuthGuard('jwt-access'))
   async updateUser(@Body() updateUserDto: UpdateUserDto, @User() user: UserPayload) {
     const id = user.id;
-    await this.userService.updateUser(id, updateUserDto);
+    return await this.userService.updateUser(id, updateUserDto);
   }
 
   @Delete()
