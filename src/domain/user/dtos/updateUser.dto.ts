@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional, IsString, Length } from "class-validator";
 
-export class UpdateUserDto {
+class UpdateUserReqDto {
   @IsString()
   @IsOptional()
   @ApiProperty({ example: "이름" })
@@ -23,3 +23,5 @@ export class UpdateUserDto {
   @ApiProperty({ example: "3333333333333" })
   account?: string;
 }
+
+export { UpdateUserReqDto }
