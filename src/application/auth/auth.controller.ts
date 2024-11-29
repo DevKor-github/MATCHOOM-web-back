@@ -21,7 +21,7 @@ export class AuthController {
   @UseGuards(SocialLoginGuard)
   @Docs('social-login')
   async socialLogin(@Res() res: Response, @Req() req: any) {
-    const oauthId = req.oauthId;
+    const oauthId = req.user;
     const { id, isOnboarding } = await this.userService.getOrCreateUser(oauthId);
     if (!isOnboarding) {
       const refreshToken = await this.authService.generateRefreshToken(id);
