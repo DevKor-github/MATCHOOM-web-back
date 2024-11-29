@@ -4,10 +4,11 @@ import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { CookieConfig } from './configs/cookie.config';
 import { RegisterReqDto } from './dtos/register.dto';
-import { Docs } from './docs/auth.decorator';
+import { Docs } from './decorators/docs/auth.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { SocialLoginGuard } from './guards/socialLogin.guard';
 import { UserService } from 'src/domain/user/user.service';
+import { Cookie } from './decorators/cookie.decorator';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -35,8 +36,7 @@ export class AuthController {
 
   @Post('register')
   @Docs('register')
-  async register(@Body() registerReqDto: RegisterReqDto, @Req() req: Request, @Res() res: Response) {
-    const id = req.cookies['sub'];
+  async register(@Body() registerReqDto: RegisterReqDto, @Cookie('sub') id: number, @Res() res: Response) {
     const { accessToken, refreshToken } = await this.authService.register(id, registerReqDto);
 
     res.clearCookie('sub', CookieConfig.tokenDelete);

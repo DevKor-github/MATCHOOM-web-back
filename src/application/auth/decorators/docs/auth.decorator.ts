@@ -1,7 +1,7 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiBody, ApiConflictResponse, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiUnauthorizedResponse } from '@nestjs/swagger';
-import { SocialLoginReqDto, SocialLoginResDto } from '../dtos/socialLogin.dto';
-import { RegisterReqDto, RegisterResDto } from '../dtos/register.dto';
+import { SocialLoginReqDto, SocialLoginResDto } from '../../dtos/socialLogin.dto';
+import { RegisterReqDto, RegisterResDto } from '../../dtos/register.dto';
 
 type EndPoints =
   | 'register'
