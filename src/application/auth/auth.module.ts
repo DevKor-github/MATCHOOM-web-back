@@ -8,13 +8,14 @@ import { User } from 'src/domain/user/entities/user.entity';
 import { JwtRefreshStrategy } from './strategies/jwtRefresh.strategy';
 import { KakaoStrategy } from './strategies/kakao.strategy';
 import { SocialLoginGuard } from './guards/socialLogin.guard';
+import { JwtAccessStrategy } from './strategies/jwtAccess.strategy';
 
 @Module({
   imports:[
     TypeOrmModule.forFeature([User]),
     JwtModule.register({})
   ],
-  providers: [AuthService, UserService, JwtRefreshStrategy, KakaoStrategy, SocialLoginGuard],
+  providers: [AuthService, UserService, JwtRefreshStrategy, JwtAccessStrategy, KakaoStrategy, SocialLoginGuard],
   controllers: [AuthController]
 })
 export class AuthModule {}
