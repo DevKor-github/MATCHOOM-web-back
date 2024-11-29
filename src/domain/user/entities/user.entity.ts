@@ -24,6 +24,6 @@ export class User {
   @Column({ default: true })
   isOnboarding: boolean;
 
-  @CreateDateColumn({ default: true })
+  @CreateDateColumn()
   createdAt: Date;
 }
