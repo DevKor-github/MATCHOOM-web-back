@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
-import { JwtPayload } from "jsonwebtoken";
 import { ExtractJwt, Strategy } from "passport-jwt";
+import { JwtPayload } from "../interfaces/jwt-payload.interface";
 
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
@@ -10,14 +10,14 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        (request) => { return request?.cookies?.['refresh-token'] }
+        (request) => { return request?.cookies?.refreshToken }
       ]),
       secretOrKey: process.env.JWT_REFRESH_SECRET,
-      passReqToCallback: true
     });
   }
 
   async validate(payload: JwtPayload) {
+    console.log(payload.sub);
     return { id: payload.sub }
   }
 }
