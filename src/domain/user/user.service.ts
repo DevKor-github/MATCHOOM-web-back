@@ -2,7 +2,8 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
-import { UpdateUserDto } from './dtos/updateUser.dto';
+import { UpdateUserReqDto } from './dtos/updateUser.dto';
+import { GetUserResDto } from './dtos/getUser.dto';
 
 @Injectable()
 export class UserService {
@@ -10,6 +11,13 @@ export class UserService {
     @InjectRepository(User)
     private userRepository: Repository<User>
   ) { }
+
+  async getMyInfo(id: number) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) throw new NotFoundException("존재하지 않는 사용자 입니다.");
+
+    return new GetUserResDto(user);
+  }
 
   async getOrCreateUser(oauthId: string) {
     let user = await this.userRepository.findOne({ where: { oauthId } });
@@ -21,7 +29,7 @@ export class UserService {
     return user;
   }
 
-  async updateUser(id: number, updateUserDto: UpdateUserDto) {
+  async updateUser(id: number, updateUserDto: UpdateUserReqDto) {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) throw new NotFoundException("존재하지 않는 사용자 입니다.");
 

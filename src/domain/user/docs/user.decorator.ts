@@ -1,6 +1,6 @@
 import { applyDecorators } from "@nestjs/common"
 import { ApiBody, ApiOperation } from "@nestjs/swagger";
-import { UpdateUserDto } from "../dtos/updateUser.dto";
+import { UpdateUserReqDto } from "../dtos/updateUser.dto";
 
 type EndPoints =
   | 'update'
@@ -18,7 +18,7 @@ export function Docs(endPoint: EndPoints) {
         summary: "유저 정보 수정"
       }),
       ApiBody({
-        type: UpdateUserDto
+        type: UpdateUserReqDto
       })
     );
     case 'delete': return applyDecorators(
