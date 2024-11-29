@@ -9,6 +9,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { SocialLoginGuard } from './guards/socialLogin.guard';
 import { UserService } from 'src/domain/user/user.service';
 import { Cookie } from './decorators/cookie.decorator';
+import { User } from 'src/common/decorators/user.decorator';
+import { UserPayload } from 'src/common/interfaces/user.payload';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -48,8 +50,8 @@ export class AuthController {
   @Post('refresh-token')
   @UseGuards(AuthGuard('jwt-refresh'))
   @Docs('refresh-token')
-  async renewToken(@Req() req: any) {
-    const id = req.user.id;
+  async renewToken(@User() user: UserPayload) {
+    const id = user.id;
     return await this.authService.renewToken(id);
   }
 
