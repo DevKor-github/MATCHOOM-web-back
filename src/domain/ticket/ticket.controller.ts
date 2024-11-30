@@ -9,6 +9,11 @@ export class TicketController {
     private readonly ticketService: TicketService
   ) { }
 
+  @Get()
+  async getAllTickets(@Param('studio')studio: number) {
+    
+  }
+
   @Get(':ticketId')
   async getTicketInfo(@Param('studio')studio: number, @Param('ticketId') TicketId: number) {
     
@@ -21,7 +26,7 @@ export class TicketController {
 
   @Patch(':ticketId')
   async updateTicket(@Body() ticketUpdateReqDto: any, @Param('ticketId') TicketId: number) {
-    
+
   }
 
   @Delete(':ticketId')
