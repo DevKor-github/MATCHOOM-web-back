@@ -10,7 +10,7 @@ import { SocialLoginGuard } from './guards/socialLogin.guard';
 import { UserService } from 'src/domain/user/user.service';
 import { Cookie } from './decorators/cookie.decorator';
 import { User } from 'src/common/decorators/user.decorator';
-import { UserPayload } from 'src/common/interfaces/user.payload';
+import { UserPayload } from 'src/common/interfaces/user.interface';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -28,7 +28,7 @@ export class AuthController {
     const { id, isOnboarding } = await this.userService.getOrCreateUser(oauthId);
     if (!isOnboarding) {
       const refreshToken = await this.authService.generateRefreshToken(id);
-      res.cookie('refresh-token', refreshToken, CookieConfig.refreshToken);
+      res.cookie('refreshToken', refreshToken, CookieConfig.refreshToken);
     } else {
       res.cookie('sub', id, CookieConfig.onboardingToken);
     }
@@ -42,7 +42,7 @@ export class AuthController {
     const { accessToken, refreshToken } = await this.authService.register(id, registerReqDto);
 
     res.clearCookie('sub', CookieConfig.tokenDelete);
-    res.cookie('refresh-token', refreshToken, CookieConfig.refreshToken);
+    res.cookie('refreshToken', refreshToken, CookieConfig.refreshToken);
 
     return res.json({ accessToken });
   }
@@ -59,7 +59,7 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt-refresh'))
   @Docs('logout')
   async logout(@Res() res: Response) {
-    res.clearCookie('refresh-token', CookieConfig.tokenDelete);
+    res.clearCookie('refreshToken', CookieConfig.tokenDelete);
     
     return res.send();
   }
