@@ -1,6 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { TicketService } from './ticket.service';
 import { ApiTags } from '@nestjs/swagger';
+import { CreateTicketReqDto } from './dtos/createTicket.dto';
+import { UpdateTicketReqDto } from './dtos/updateTicket.dto';
 
 @Controller(':studioId/ticket')
 @ApiTags('ticket')
@@ -20,17 +22,17 @@ export class TicketController {
   }
 
   @Post()
-  async createTicket(@Body() ticketCreateReqDto: any) {
+  async createTicket(@Param('studioId')studioId: number, @Body() createTicketReqDto: CreateTicketReqDto) {
 
   }
 
   @Patch(':ticketId')
-  async updateTicket(@Body() ticketUpdateReqDto: any, @Param('ticketId') ticketId: number) {
+  async updateTicket(@Body() updateTicketReqDto: UpdateTicketReqDto, @Param('ticketId') ticketId: number) {
 
   }
 
   @Delete(':ticketId')
   async deleteTicket(@Param('ticketId') ticketId: number) {
-
+    
   }
 }
