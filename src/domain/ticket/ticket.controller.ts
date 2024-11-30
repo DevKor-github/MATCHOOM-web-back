@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/commo
 import { TicketService } from './ticket.service';
 import { ApiTags } from '@nestjs/swagger';
 
-@Controller(':studio/ticket')
+@Controller(':studioId/ticket')
 @ApiTags('ticket')
 export class TicketController {
   constructor(
@@ -10,12 +10,12 @@ export class TicketController {
   ) { }
 
   @Get()
-  async getAllTickets(@Param('studio')studio: number) {
-    
+  async getAllTickets(@Param('studioId')studioId: number) {
+
   }
 
   @Get(':ticketId')
-  async getTicketInfo(@Param('studio')studio: number, @Param('ticketId') TicketId: number) {
+  async getTicketInfo(@Param('studioId')studioId: number, @Param('ticketId') ticketId: number) {
     
   }
 
@@ -25,12 +25,12 @@ export class TicketController {
   }
 
   @Patch(':ticketId')
-  async updateTicket(@Body() ticketUpdateReqDto: any, @Param('ticketId') TicketId: number) {
+  async updateTicket(@Body() ticketUpdateReqDto: any, @Param('ticketId') ticketId: number) {
 
   }
 
   @Delete(':ticketId')
-  async deleteTicket(@Param('ticketId') TicketId: number) {
+  async deleteTicket(@Param('ticketId') ticketId: number) {
 
   }
 }
