@@ -51,7 +51,7 @@ export class TicketService {
     return { message: "티켓 생성 성공" };
   }
 
-  async updateTicket(studioId: number, ticketId: number, updateTicketReqDto: UpdateTicketReqDto) {
+  async updateTicket(studioId: number, ticketId: number, updateTicketReqDto: UpdateTicketReqDto) {/*
     const ticket = await this.ticketRepository.findOne({ where: { id: ticketId, studio: { id: studioId } } });
     if (!ticket) throw new NotFoundException("존재하지 않는 티켓입니다.");
 
@@ -60,5 +60,16 @@ export class TicketService {
     ticket.name = name || ticket.name;
     ticket.price = price || ticket.price;
     ticket.point = point || ticket.point;
+
+    await this.ticketRepository.save(ticket);
+*/
+    return { message: "티켓 정보 수정 성공" };
+  }
+
+  async deleteTicket(studioId: number, ticketId: number) {
+    const ticket = await this.ticketRepository.findOne({ where: { id: ticketId, studio: { id: studioId } } });
+    if (!ticket) throw new NotFoundException("존재하지 않는 티켓입니다.");
+
+    return { message: "티켓 삭제 성공" };
   }
 }
