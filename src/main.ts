@@ -11,7 +11,8 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:3000/',
-      'https://matchoom.nalgae.me/'
+      'https://matchoom.nalgae.me/',
+      'http://13.125.223.243:3000/',
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type, Authorization, application/json',
