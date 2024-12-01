@@ -10,6 +10,7 @@ import { LectureModule } from './domain/lecture/lecture.module';
 import { UserModule } from './domain/user/user.module';
 import { AuthModule } from './application/auth/auth.module';
 import { S3Module } from './application/s3/s3.module';
+import { PointModule } from './domain/point/point.module';
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { S3Module } from './application/s3/s3.module';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: process.env.JWT_EXPIRES_IN }
     }),
-    StudioModule, LectureModule, UserModule, AuthModule, S3Module],
+    StudioModule, LectureModule, UserModule, AuthModule, S3Module, PointModule],
   controllers: [AppController],
   providers: [AppService],
 })
