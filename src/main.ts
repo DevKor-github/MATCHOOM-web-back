@@ -9,7 +9,10 @@ async function bootstrap() {
 
   // CORS 설정
   app.enableCors({
-    origin: '*',
+    origin: [
+      'http://localhost:3000/',
+      'https://matchoom.nalgae.me/'
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type, Authorization, application/json',
     credentials: true
