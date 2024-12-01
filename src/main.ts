@@ -12,6 +12,7 @@ async function bootstrap() {
     origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type, Authorization, application/json',
+    credentials: true
   });
 
   // validation pipe
