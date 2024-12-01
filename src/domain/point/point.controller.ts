@@ -1,6 +1,9 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { PointService } from './point.service';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { User } from 'src/common/decorators/user.decorator';
+import { UserPayload } from 'src/common/interfaces/user.interface';
 
 @Controller(':studioId/point')
 @ApiTags('point')
@@ -10,7 +13,9 @@ export class PointController {
   ) { }
 
   @Get()
-  async getMyPoints(@Param('studioId') studioId: number) {
-    
+  @UseGuards(AuthGuard('jwt-access'))
+  async getMyPoints(@Param('studioId') studioId: number, @User() user: UserPayload) {
+    const userId = user.id;
+    return await this.pointService.getMyPoints(studioId, userId);
   }
 }
