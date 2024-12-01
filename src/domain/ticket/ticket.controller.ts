@@ -32,13 +32,13 @@ export class TicketController {
 
   @Patch(':ticketId')
   @Docs('updateTicket')
-  async updateTicket(@Body() updateTicketReqDto: UpdateTicketReqDto, @Param('ticketId') ticketId: number) {
+  async updateTicket(@Body() updateTicketReqDto: UpdateTicketReqDto, @Param('studioId') studioId: number, @Param('ticketId') ticketId: number) {
 
   }
 
   @Delete(':ticketId')
   @Docs('deleteTicket')
-  async deleteTicket(@Param('ticketId') ticketId: number) {
+  async deleteTicket(@Param('studioId') studioId: number, @Param('ticketId') ticketId: number) {
 
   }
 }

@@ -4,6 +4,7 @@ import { Ticket } from './entities/ticket.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GetTicketResDto } from './dtos/getTicket.dto';
 import { CreateTicketReqDto } from './dtos/createTicket.dto';
+import { UpdateTicketReqDto } from './dtos/updateTicket.dto';
 
 @Injectable()
 export class TicketService {
@@ -38,7 +39,7 @@ export class TicketService {
 
   async createTicket(studioId: number, createTicketReqDto: CreateTicketReqDto) {
     /*
-    const studio = this.studioRepository.findOne({ where: { id: studioId } });
+    const studio = await this.studioRepository.findOne({ where: { id: studioId } });
     if (!studio) throw new NotFoundException("존재하지 않는 스튜디오 입니다.");
 
     const ticket = this.ticketRepository.create({ 
@@ -48,5 +49,16 @@ export class TicketService {
     await this.ticketRepository.save(ticket);
 */
     return { message: "티켓 생성 성공" };
+  }
+
+  async updateTicket(studioId: number, ticketId: number, updateTicketReqDto: UpdateTicketReqDto) {
+    const ticket = await this.ticketRepository.findOne({ where: { id: ticketId, studio: { id: studioId } } });
+    if (!ticket) throw new NotFoundException("존재하지 않는 티켓입니다.");
+
+    const { name, price, point } = updateTicketReqDto;
+
+    ticket.name = name || ticket.name;
+    ticket.price = price || ticket.price;
+    ticket.point = point || ticket.point;
   }
 }
