@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Point } from "src/domain/point/entities/point.entity";
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
 
 @Entity()
 @Unique(['oauthId', 'phone'])
@@ -26,4 +27,7 @@ export class User {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @OneToMany(() => Point, point => point.user, { nullable: true })
+  points: Point[]
 }
