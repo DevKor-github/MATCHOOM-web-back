@@ -67,9 +67,11 @@ export class TicketService {
   }
 
   async deleteTicket(studioId: number, ticketId: number) {
+    /*
     const ticket = await this.ticketRepository.findOne({ where: { id: ticketId, studio: { id: studioId } } });
     if (!ticket) throw new NotFoundException("존재하지 않는 티켓입니다.");
 
     return { message: "티켓 삭제 성공" };
+    */
   }
 }

@@ -27,18 +27,18 @@ export class TicketController {
   @Post()
   @Docs('createTicket')
   async createTicket(@Param('studioId') studioId: number, @Body() createTicketReqDto: CreateTicketReqDto) {
-
+    return await this.ticketService.createTicket(studioId, createTicketReqDto);
   }
 
   @Patch(':ticketId')
   @Docs('updateTicket')
   async updateTicket(@Body() updateTicketReqDto: UpdateTicketReqDto, @Param('studioId') studioId: number, @Param('ticketId') ticketId: number) {
-
+    return await this.ticketService.updateTicket(studioId, ticketId, updateTicketReqDto);
   }
 
   @Delete(':ticketId')
   @Docs('deleteTicket')
   async deleteTicket(@Param('studioId') studioId: number, @Param('ticketId') ticketId: number) {
-
+    return await this.ticketService.deleteTicket(studioId, ticketId);
   }
 }
