@@ -11,12 +11,12 @@ export class StudioController {
 
     @Get(':id/info')
     async getStudioInfo(@Param('id') id: number){
-        return
+        return this.studioService.getStudioInfo(id)
     }
 
     @Get(':id/announcement')
     async getStudioAnnouncement(@Param('id') id: number){
-        return
+        return this.studioService.getStudioAnnouncement(id)
     }
 
     @Get(':id/search')
