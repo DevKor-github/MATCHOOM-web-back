@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Lecture } from './entities/lecture.entity';
 import { Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
-import { CreateLectureDto, DeleteLectureDto } from './dtos/lecture.dto';
+import { CreateLectureDto, DeleteLectureDto, LectureApplyDto } from './dtos/lecture.dto';
 import { Studio } from '../studio/entities/studio.entity';
 import { LectureGroup } from './entities/lecture.group.entity';
 
@@ -64,5 +64,40 @@ export class LectureService {
         if(!lec) throw new NotFoundException
         //추후 Output Dto
         return lec
+    }
+
+    async applyLecture(lectureApplyDto: LectureApplyDto, userId: number){
+        const {lectureId} = lectureApplyDto
+        const lec = await this.lectureRepository.findOne({
+            where:{id: lectureId}, 
+            relations: ['student']
+        })
+        if(!lec) throw new NotFoundException("강의를 찾을 수 없습니다.")
+        const registerations = lec.student.length
+        
+        const usr = await this.userRepository.findOne({
+            where: {id: userId}, 
+            relations: ['lectures']
+        })
+
+        lec.student = lec.student ?? []
+        usr.lectures = usr.lectures ?? []
+
+        const isAlreadyRegistered = lec.student.some(student => student.id === userId)
+        if (isAlreadyRegistered) throw new ForbiddenException('이미 강의에 포함되어 있음')
+
+        if (lec.capacity !== null && lec.capacity !== undefined){
+            if (lec.capacity <= registerations) throw new ForbiddenException('정원 초과')
+        }
+
+        lec.student.push(usr)
+        await this.lectureRepository.save(lec)
+
+        usr.lectures.push(lec)
+        await this.userRepository.save(usr)
+
+        return {
+            message: `등록 성공 ${lec.student.length}/${lec.capacity ?? '무제한'}`
+        }
     }
 }

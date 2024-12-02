@@ -54,4 +54,9 @@ class DeleteLectureDto{
     lectureId: number
 }
 
-export { CreateLectureDto, DeleteLectureDto}
+class LectureApplyDto{
+    @IsNumber()
+    lectureId: number
+}
+
+export { CreateLectureDto, DeleteLectureDto, LectureApplyDto }
