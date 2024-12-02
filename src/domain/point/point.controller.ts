@@ -20,4 +20,10 @@ export class PointController {
     const userId = user.id;
     return await this.pointService.getMyPoints(studioId, userId);
   }
+
+  @Get('total')
+  @UseGuards(AuthGuard('jwt-access'))
+  async getTotalPoint(@Param('studioId') studioId: number, @User() user: UserPayload) {
+    
+  }
 }
