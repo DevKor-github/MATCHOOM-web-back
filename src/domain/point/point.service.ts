@@ -1,11 +1,14 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Point } from './entities/point.entity';
 import { MoreThan, Repository } from 'typeorm';
+import { User } from '../user/entities/user.entity';
 
 @Injectable()
 export class PointService {
   constructor(
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
     @InjectRepository(Point)
     private pointRepository: Repository<Point>
   ) { }
@@ -46,5 +49,19 @@ export class PointService {
 
       await this.pointRepository.save(p);
     };
+  }
+
+  async chargePoint(studioId: number, userId: number, amout: number) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException("존재하지 않는 유저 입니다.");
+
+    // studio table 추가되면 studio: studio 추가.
+    const point = this.pointRepository.create({
+      point: amout,
+      expiration: new Date(Date.now() + 24 * 60 * 60 * 1000 * 30),
+      user: user
+    });
+
+    await this.pointRepository.save(point);
   }
 }
