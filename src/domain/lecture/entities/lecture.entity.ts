@@ -1,6 +1,7 @@
 import { Studio } from "src/domain/studio/entities/studio.entity";
-import { Column, Entity, JoinTable, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { LectureGroup } from "./lecture.group.entity";
+import { User } from "src/domain/user/entities/user.entity";
 
 @Entity()
 export class Lecture{
@@ -23,6 +24,12 @@ export class Lecture{
     closeTime: Date
 
     @Column()
+    capacity: number
+
+    @Column()
+    minimum: number
+
+    @Column()
     difficulty: number
 
     @Column("simple-array")
@@ -39,6 +46,11 @@ export class Lecture{
 
     @ManyToOne(()=> LectureGroup, (lecturegroup)=>lecturegroup.lectures, {onDelete: 'CASCADE'})
     group: LectureGroup
+
+    @ManyToMany(() => User, user => user.lectures)
+    @JoinTable()
+    student: User[]
+    
     /*
     @OneToOne(() => Attachments, (attachments) => attachments.lecture, {cascade: true})
     @JoinTable()
