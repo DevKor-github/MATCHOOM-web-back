@@ -13,7 +13,7 @@ export class PointService {
   async getMyPoints(studioId: number, userId: number) {
     // studio 테이블 생성 시 where에 stuio: { id: studioId } 추가 예정
     return await this.pointRepository.find({ 
-      where: { user: { id: userId }, expiration: MoreThan(new Date()) },
+      where: { user: { id: userId }, expiration: MoreThan(new Date()), point: MoreThan(0) },
       select: ['point', 'expiration'],
       order: { expiration: 'ASC' }
     });
