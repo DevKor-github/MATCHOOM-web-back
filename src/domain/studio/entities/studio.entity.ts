@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, OneToOne } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, OneToOne } from "typeorm";
 import { Announcement } from "./announcement.entity";
 import { Lecture } from "src/domain/lecture/entities/lecture.entity";
 import { User } from "src/domain/user/entities/user.entity";
@@ -19,11 +19,11 @@ export class Studio{
 
     @Column()
     policy: string
+
+    @ManyToOne(()=> User, (user)=> user.studio)
+    admin: User[]
     
     /*@OneToMany()
     files: Attachments[]
-
-    @OneToOne(()=> User, (user)=> user.studio)
-    admin: User
     */
 }
