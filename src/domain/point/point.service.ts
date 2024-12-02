@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Point } from './entities/point.entity';
 import { MoreThan, Repository } from 'typeorm';
@@ -26,11 +26,25 @@ export class PointService {
       .select('SUM(point.point)', 'total')
       .where('point.user.id = :userId', { userId })
       .andWhere('point.expiration > :now', { now: new Date() })
-      .andWhere('point.point > 0') // Add this condition
+      .andWhere('point.point > 0')
       .getRawOne();
 
     return total || 0;
   }
 
-  
+  async spendPoints(studioId: number, userId: number, amount: number) {
+    const totalPoint = await this.getTotalPoint(studioId, userId);
+    if (totalPoint < amount) throw new Error("남은 포인트가 충분하지 않습니다.");
+
+    let remainingAmount = amount;
+    const points = await this.getMyPoints(studioId, userId);
+    for (const p of points) {
+      if (remainingAmount <= 0) break;
+      const deduction = Math.min(p.point, remainingAmount);
+      remainingAmount -= deduction;
+      p.point = deduction;
+
+      await this.pointRepository.save(p);
+    };
+  }
 }
