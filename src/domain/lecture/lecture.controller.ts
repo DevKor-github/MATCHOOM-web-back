@@ -1,7 +1,8 @@
-import { Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { LectureService } from './lecture.service';
 import { ApiTags } from '@nestjs/swagger';
 import { User } from 'src/common/decorators/user.decorator';
+import { CreateLectureDto, DeleteLectureDto } from './dtos/lecture.dto';
 
 @Controller('lecture')
 @ApiTags('lecture')
@@ -12,7 +13,7 @@ export class LectureController {
 
     @Get(':id/info')
     async getLectureInfo(@Param('id') id: number){
-        return 
+        return this.lectureService.getLectureInfo(id)
     }
 
     @Post('apply')
@@ -21,8 +22,19 @@ export class LectureController {
     }
 
     @Post()
-    async createLecture(@User() user){
-        return
+    async createLecture(
+        @Body() createLectureDto: CreateLectureDto, 
+        @User() user
+    ){
+        return this.lectureService.createLecture(createLectureDto, user.id)
+    }
+
+    @Delete()
+    async deleteLecture(
+        @Body() deleteLectureDto: DeleteLectureDto,
+        @User() user
+    ){
+        return this.lectureService.deleteLecture(deleteLectureDto, user.id)
     }
 
 }

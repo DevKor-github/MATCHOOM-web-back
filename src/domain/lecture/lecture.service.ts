@@ -56,4 +56,13 @@ export class LectureService {
 
         return {message: `Deleted Lecture successfully`}
     }
+
+    async getLectureInfo(lectureId: number){
+        const lec = this.lectureRepository.findOne({
+            where: {id: lectureId}
+        })
+        if(!lec) throw new NotFoundException
+        //추후 Output Dto
+        return lec
+    }
 }
