@@ -1,5 +1,5 @@
 import { applyDecorators } from "@nestjs/common"
-import { ApiBody, ApiConflictResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation } from "@nestjs/swagger";
+import { ApiBody, ApiConflictResponse, ApiHeader, ApiNotFoundResponse, ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 import { UpdateUserReqDto } from "../dtos/updateUser.dto";
 import { GetUserResDto } from "../dtos/getUser.dto";
 
@@ -15,6 +15,10 @@ export function Docs(endPoint: EndPoints) {
         description: "유저 정보 조회(본인)",
         summary: "유저 정보 조회(본인)"
       }),
+      ApiHeader({
+        name: "Authorization",
+        description: "access token"
+      }),
       ApiOkResponse({
         description: "본인 정보 조회 성공",
         type: GetUserResDto
@@ -24,6 +28,10 @@ export function Docs(endPoint: EndPoints) {
       ApiOperation({
         description: "유저 정보 수정",
         summary: "유저 정보 수정"
+      }),
+      ApiHeader({
+        name: "Authorization",
+        description: "access token"
       }),
       ApiBody({
         type: UpdateUserReqDto
