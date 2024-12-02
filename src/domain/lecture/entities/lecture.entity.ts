@@ -1,5 +1,6 @@
 import { Studio } from "src/domain/studio/entities/studio.entity";
 import { Column, Entity, JoinTable, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { LectureGroup } from "./lecture.group.entity";
 
 @Entity()
 export class Lecture{
@@ -13,7 +14,7 @@ export class Lecture{
     type: boolean
 
     @Column()
-    date: Date | Date[]
+    date: Date
 
     @Column()
     openTime: Date
@@ -36,6 +37,8 @@ export class Lecture{
     @ManyToOne(()=> Studio, (studio)=>studio.lectures, {onDelete: "CASCADE"})
     studio: Studio
 
+    @ManyToOne(()=> LectureGroup, (lecturegroup)=>lecturegroup.lectures, {onDelete: 'CASCADE'})
+    group: LectureGroup
     /*
     @OneToOne(() => Attachments, (attachments) => attachments.lecture, {cascade: true})
     @JoinTable()
