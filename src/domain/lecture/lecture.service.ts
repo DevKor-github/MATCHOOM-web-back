@@ -39,4 +39,21 @@ export class LectureService {
         
         return res
     }
+
+    async deleteLecture(deleteLectureDto: DeleteLectureDto, userId: number){
+        const {lectureId} = deleteLectureDto
+        const lec = await this.lectureRepository.findOne({
+            where: {id: lectureId},
+            relations: ['group', 'studio', 'studio.admin']
+        })
+        if(!lec) throw new NotFoundException
+
+        const isOwner = lec.studio.admin.some(e => e.id === userId)
+        if(!isOwner) throw new ForbiddenException
+
+        if(lec.group) await this.lectureGroupRepository.delete(lec.group.id)
+        else this.lectureRepository.delete(lectureId)
+
+        return {message: `Deleted Lecture successfully`}
+    }
 }
