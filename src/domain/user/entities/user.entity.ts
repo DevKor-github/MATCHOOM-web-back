@@ -24,6 +24,12 @@ export class User {
   @Column({ default: true })
   isOnboarding: boolean;
 
+  @Column({ default: false })
+  isStudio: boolean;
+
+  @Column({ nullable: true })
+  accountHolder: string;
+
   @CreateDateColumn()
   createdAt: Date;
 }

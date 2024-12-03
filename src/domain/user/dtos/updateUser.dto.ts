@@ -22,6 +22,11 @@ class UpdateUserReqDto {
   @Length(10, 14)
   @ApiProperty({ example: "3333333333333" })
   account?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ example: "계좌주/계좌명" })
+  accountHolder?: string;
 }
 
 export { UpdateUserReqDto }
