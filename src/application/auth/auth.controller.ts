@@ -8,7 +8,6 @@ import { Docs } from './decorators/docs/auth.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { SocialLoginGuard } from './guards/socialLogin.guard';
 import { UserService } from 'src/domain/user/user.service';
-import { Cookie } from './decorators/cookie.decorator';
 import { User } from 'src/common/decorators/user.decorator';
 import { UserPayload } from 'src/common/interfaces/user.interface';
 
@@ -26,33 +25,30 @@ export class AuthController {
   async socialLogin(@Res() res: Response, @Req() req: any) {
     const oauthId = req.user;
     const { id, isOnboarding } = await this.userService.getOrCreateUser(oauthId);
-    if (!isOnboarding) {
-      const refreshToken = await this.authService.generateRefreshToken(id);
-      res.cookie('refreshToken', refreshToken, CookieConfig.refreshToken);
-    } else {
-      res.cookie('sub', id, CookieConfig.onboardingToken);
-    }
+    const refreshToken = await this.authService.generateRefreshToken(id, isOnboarding);
+    // res.cookie('refreshToken', refreshToken, CookieConfig.refreshToken);
 
-    return res.json({ isOnboarding });
+    return res.json({ refreshToken, isOnboarding });
   }
 
   @Post('register')
+  @UseGuards(AuthGuard('register'))
   @Docs('register')
-  async register(@Body() registerReqDto: RegisterReqDto, @Cookie('sub') id: number, @Res() res: Response) {
-    const { accessToken, refreshToken } = await this.authService.register(id, registerReqDto);
+  async register(@Body() registerReqDto: RegisterReqDto, @User() user: UserPayload, @Res() res: Response) {
+    const { id, isOnboarding } = user;
+    const { accessToken, refreshToken } = await this.authService.register(id, isOnboarding, registerReqDto);
 
-    res.clearCookie('sub', CookieConfig.tokenDelete);
-    res.cookie('refreshToken', refreshToken, CookieConfig.refreshToken);
+    // res.cookie('refreshToken', refreshToken, CookieConfig.refreshToken);
 
-    return res.json({ accessToken });
+    return res.json({ refreshToken, accessToken });
   }
 
   @Post('refresh-token')
   @UseGuards(AuthGuard('jwt-refresh'))
   @Docs('refresh-token')
   async renewToken(@User() user: UserPayload) {
-    const id = user.id;
-    return await this.authService.renewToken(id);
+    const { id, isOnboarding } = user;
+    return await this.authService.renewToken(id, isOnboarding);
   }
 
   @Post('logout')

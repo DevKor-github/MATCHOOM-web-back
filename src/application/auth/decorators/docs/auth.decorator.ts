@@ -1,5 +1,5 @@
 import { applyDecorators } from '@nestjs/common';
-import { ApiBody, ApiConflictResponse, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConflictResponse, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { SocialLoginReqDto, SocialLoginResDto } from '../../dtos/socialLogin.dto';
 import { RegisterReqDto, RegisterResDto } from '../../dtos/register.dto';
 
@@ -35,6 +35,7 @@ export function Docs(endPoint: EndPoints) {
         description: "회원가입. 입력 정보들을 받아 회원가입. 완료 시 access token 반환",
         summary: "회원가입"
       }),
+      ApiBearerAuth(),
       ApiBody({
         type: RegisterReqDto
       }),
@@ -54,6 +55,7 @@ export function Docs(endPoint: EndPoints) {
         description: "access 토큰 갱신. cookie의 refresh token 확인하여 access token 갱신하여 반환",
         summary: "access token 갱신"
       }),
+      ApiBearerAuth(),
       ApiCreatedResponse({
         description: "토큰 갱신 성공"
       }),
