@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { PointService } from './point.service';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
@@ -28,4 +28,10 @@ export class PointController {
 
   }
   */
+
+  @Post('charge')
+  @UseGuards(AuthGuard('jwt-access'))
+  async chargePoint(@Param('studioId') studioId: number, @Param('ticketId') ticketId: number, @User() user: UserPayload) {
+    
+  }
 }

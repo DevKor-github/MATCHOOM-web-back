@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Point } from './entities/point.entity';
-import { MoreThan, Repository } from 'typeorm';
+import { In, MoreThan, Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 
 @Injectable()
@@ -10,7 +10,11 @@ export class PointService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     @InjectRepository(Point)
-    private pointRepository: Repository<Point>
+    private pointRepository: Repository<Point>,
+    /*
+    @InjectRepository(Ticket)
+    private ticketRepository: Repository<Ticket)
+    */
   ) { }
 
   async getMyPoints(studioId: number, userId: number) {
@@ -51,13 +55,17 @@ export class PointService {
     };
   }
 
-  async chargePoint(studioId: number, userId: number, amout: number) {
+  async chargePoint(studioId: number, userId: number, ticketId: number) {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) throw new NotFoundException("존재하지 않는 유저 입니다.");
-
+/*
+    const ticket = await this.ticketRepository.findOne({ where: { id: ticketId, studio: {id: studioId} } });
+    if (!ticket) throw new NotFoundException("존재하지 않는 티켓입니다.");
+    const amount = ticket.point;
+*/
     // studio table 추가되면 studio: studio 추가.
     const point = this.pointRepository.create({
-      point: amout,
+      // point: amount,
       expiration: new Date(Date.now() + 24 * 60 * 60 * 1000 * 30),
       user: user
     });
