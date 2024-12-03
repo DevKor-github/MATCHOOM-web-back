@@ -3,6 +3,8 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import * as cookieParser from 'cookie-parser';
+import { LoggingInterceptor } from './common/interceptors/logger.interceptor';
+import { GlobalExceptionFilter } from './common/filters/logger.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -33,6 +35,10 @@ async function bootstrap() {
 
   // cookie parser 사용
   app.use(cookieParser());
+
+  // log
+  app.useGlobalInterceptors(new LoggingInterceptor());
+  app.useGlobalFilters(new GlobalExceptionFilter());
 
   await app.listen(process.env.PORT ?? 3000);
 }
