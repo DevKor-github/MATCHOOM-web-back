@@ -21,6 +21,11 @@ class RegisterReqDto {
   @IsNotEmpty()
   @ApiProperty({ example: "3333333333333" })
   account?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ example: "계좌주/계좌명" })
+  accountHolder?: string;
 }
 
 class RegisterResDto {

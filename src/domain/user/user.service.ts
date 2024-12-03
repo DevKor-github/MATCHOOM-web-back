@@ -33,7 +33,7 @@ export class UserService {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) throw new NotFoundException("존재하지 않는 사용자 입니다.");
 
-    const { name, phone, bank, account } = updateUserDto;
+    const { name, phone, bank, account, accountHolder } = updateUserDto;
     const phoneCheck = await this.userRepository.findOne({ where: { phone } });
     if (phoneCheck) throw new ConflictException("중복된 전화번호 입니다.");
 
@@ -41,6 +41,7 @@ export class UserService {
     user.phone = phone || user.phone;
     user.bank = bank || user.bank;
     user.account = account || user.account;
+    user.accountHolder = accountHolder || user.accountHolder;
     user.isOnboarding = false
 
     await this.userRepository.save(user);
