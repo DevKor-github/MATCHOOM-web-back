@@ -25,10 +25,10 @@ export class AuthController {
   async socialLogin(@Res() res: Response, @Req() req: any) {
     const oauthId = req.user;
     const { id, isOnboarding } = await this.userService.getOrCreateUser(oauthId);
-    const refreshToken = await this.authService.generateRefreshToken(id, isOnboarding);
+    const { refreshToken, accessToken } = await this.authService.generateTokens(id, isOnboarding);
     // res.cookie('refreshToken', refreshToken, CookieConfig.refreshToken);
 
-    return res.json({ refreshToken, isOnboarding });
+    return res.json({ refreshToken, accessToken, isOnboarding });
   }
 
   @Post('register')
