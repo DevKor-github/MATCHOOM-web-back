@@ -14,7 +14,9 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
     const { code } = req.body;
     try{
       const kakaoToken = await this.getKakaoToken(code);
+      console.log(kakaoToken);
       const oauthId = (await this.getKakaoUserInfo(kakaoToken)).toString();
+      console.log(oauthId);
 
       this.success(oauthId);
     } catch (error) {
