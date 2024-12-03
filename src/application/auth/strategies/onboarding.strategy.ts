@@ -6,12 +6,18 @@ import { JwtPayload } from '../interfaces/jwt-payload.interface';
 @Injectable()
 export class RegisterStrategy extends PassportStrategy(Strategy, 'register') {
   constructor() {
+    /*
     super({
-        jwtFromRequest: ExtractJwt.fromExtractors([
-          (request) => { return request?.cookies?.refreshToken }
-        ]),
-        secretOrKey: process.env.JWT_REFRESH_SECRET,
-      });
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (request) => { return request?.cookies?.refreshToken }
+      ]),
+      secretOrKey: process.env.JWT_REFRESH_SECRET,
+    });
+    */
+    super({
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      secretOrKey: process.env.JWT_ACCESS_SECRET,
+    });
   }
 
   async validate(payload: JwtPayload) {
