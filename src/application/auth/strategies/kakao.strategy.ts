@@ -32,10 +32,13 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
       code: code
     }
     const headers = { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8' };
+    console.log(params);
     const res = await axios.post('https://kauth.kakao.com/oauth/token', {}, { params, headers });
+    console.log(res);
     if (!res) throw new BadRequestException('Kakao access token을 가져오는데 실패 했습니다.');
 
     const kakaoToken = res.data.access_token;
+    console.log(kakaoToken);
     if (!kakaoToken) throw new UnauthorizedException("Kakao access token을 가져오는데 실패 했습니다.");
 
     return kakaoToken;
@@ -43,9 +46,11 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
 
   private async getKakaoUserInfo(kakaoToken: string): Promise<string> {
     const res = await axios.get('https://kapi.kakao.com/v2/user/me', { headers: { Authorization: `Bearer ${kakaoToken}` } });
+    console.log(res);
     if (!res) new UnauthorizedException("소셜 로그인 계정 정보를 불러올 수 없습니다.");
 
     const id = res.data.id;
+    console.log(id);
     if (!id) throw new NotFoundException("존재하지 않는 소셜 로그인 유저 입니다.");
 
     return id;
