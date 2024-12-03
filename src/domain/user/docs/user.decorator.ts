@@ -1,5 +1,5 @@
 import { applyDecorators } from "@nestjs/common"
-import { ApiBody, ApiConflictResponse, ApiHeader, ApiNotFoundResponse, ApiOkResponse, ApiOperation } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiBody, ApiConflictResponse, ApiHeader, ApiNotFoundResponse, ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 import { UpdateUserReqDto } from "../dtos/updateUser.dto";
 import { GetUserResDto } from "../dtos/getUser.dto";
 
@@ -15,10 +15,7 @@ export function Docs(endPoint: EndPoints) {
         description: "유저 정보 조회(본인)",
         summary: "유저 정보 조회(본인)"
       }),
-      ApiHeader({
-        name: "Authorization",
-        description: "access token"
-      }),
+      ApiBearerAuth(),
       ApiOkResponse({
         description: "본인 정보 조회 성공",
         type: GetUserResDto
@@ -29,10 +26,7 @@ export function Docs(endPoint: EndPoints) {
         description: "유저 정보 수정",
         summary: "유저 정보 수정"
       }),
-      ApiHeader({
-        name: "Authorization",
-        description: "access token"
-      }),
+      ApiBearerAuth(),
       ApiBody({
         type: UpdateUserReqDto
       }),
@@ -51,6 +45,7 @@ export function Docs(endPoint: EndPoints) {
         description: "회원 탈퇴. cookie의 refresh token 삭제, 유저 정보 db에서 삭제",
         summary: "회원 탈퇴"
       }),
+      ApiBearerAuth(),
       ApiOkResponse({
         description: "회원 탈퇴 성공"
       }),
