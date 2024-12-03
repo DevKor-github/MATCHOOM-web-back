@@ -1,16 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { User } from 'src/domain/user/entities/user.entity';
-import { Repository } from 'typeorm';
 import { UserService } from 'src/domain/user/user.service';
 import { RegisterReqDto } from './dtos/register.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
     private userService: UserService,
     private jwtService: JwtService,
   ) { }
