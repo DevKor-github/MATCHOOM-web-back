@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 import { JwtPayload } from '../interfaces/jwt-payload.interface';
@@ -13,6 +13,9 @@ export class JwtAccessStrategy extends PassportStrategy(Strategy, 'jwt-access') 
   }
 
   async validate(payload: JwtPayload) {
-    return { id: payload.sub };
+    const { sub, isOnboarding } = payload;
+    if (isOnboarding) throw new UnauthorizedException("회원가입 절차를 완료하지 않은 사용자 입니다.");
+
+    return { id: sub }
   }
 }
