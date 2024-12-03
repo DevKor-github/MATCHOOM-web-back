@@ -14,9 +14,11 @@ export class RegisterStrategy extends PassportStrategy(Strategy, 'register') {
       secretOrKey: process.env.JWT_REFRESH_SECRET,
     });
     */
+
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: process.env.JWT_ACCESS_SECRET,
+      secretOrKey: process.env.JWT_REFRESH_SECRET,
+      passReqToCallback: true
     });
   }
 
