@@ -1,4 +1,6 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Lecture } from "src/domain/lecture/entities/lecture.entity";
+import { Studio } from "src/domain/studio/entities/studio.entity";
+import { Column, CreateDateColumn, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
 
 @Entity()
 @Unique(['oauthId', 'phone'])
@@ -32,4 +34,11 @@ export class User {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @ManyToMany(() => Lecture, lecture => lecture.student)
+  lectures: Lecture[]
+
+  @OneToMany(()=> Studio, (studio)=>studio.admin)
+  studio: Studio
+
 }
