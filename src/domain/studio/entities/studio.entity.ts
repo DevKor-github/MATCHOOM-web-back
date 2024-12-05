@@ -3,6 +3,7 @@ import { Announcement } from "./announcement.entity";
 import { Lecture } from "src/domain/lecture/entities/lecture.entity";
 import { User } from "src/domain/user/entities/user.entity";
 import { Media } from "src/application/media/entities/media.entity";
+import { Ticket } from "src/domain/ticket/entities/ticket.entity";
 
 @Entity()
 export class Studio{
@@ -29,4 +30,7 @@ export class Studio{
     
     @OneToMany(()=> Media, (media) => media.studio)
     medias: Media[]
+
+    @OneToMany(() => Ticket, (ticket) => ticket.studio, { nullable: true })
+    tickets: Ticket[];
 }

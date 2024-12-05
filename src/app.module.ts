@@ -10,6 +10,7 @@ import { LectureModule } from './domain/lecture/lecture.module';
 import { UserModule } from './domain/user/user.module';
 import { AuthModule } from './application/auth/auth.module';
 import { MediaModule } from './application/media/media.module';
+import { TicketModule } from './domain/ticket/ticket.module';
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { MediaModule } from './application/media/media.module';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: process.env.JWT_EXPIRES_IN }
     }),
-    StudioModule, LectureModule, UserModule, AuthModule, MediaModule],
+    StudioModule, LectureModule, UserModule, AuthModule, MediaModule, TicketModule],
   controllers: [AppController],
   providers: [AppService],
 })
