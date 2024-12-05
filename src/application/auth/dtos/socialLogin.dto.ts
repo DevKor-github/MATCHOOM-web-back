@@ -14,8 +14,12 @@ class SocialLoginReqDto {
 }
 
 class SocialLoginResDto {
-  @IsBoolean()
-  @IsNotEmpty()
+  @ApiProperty({ example: "xxxx.xxxx.xxxx" })
+  refreshToken: string;
+
+  @ApiProperty({ example: "xxxx.xxxx.xxxx" })
+  accessToken: string;
+
   @ApiProperty({ example: false })
   isOnboarding: boolean;
 }
