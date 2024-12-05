@@ -3,10 +3,14 @@ import { MediaService } from './media.service';
 import { MediaController } from './media.controller';
 import { MulterModule } from '@nestjs/platform-express';
 import { S3Client } from '@aws-sdk/client-s3';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Studio } from 'src/domain/studio/entities/studio.entity';
+import { Media } from './entities/media.entity';
 
 @Module({
     imports: [
-        MulterModule.register({})
+        MulterModule.register({}),
+        TypeOrmModule.forFeature([Studio, Media]),
     ],
     providers: [
         {
