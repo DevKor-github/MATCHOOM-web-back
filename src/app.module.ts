@@ -10,7 +10,6 @@ import { LectureModule } from './domain/lecture/lecture.module';
 import { UserModule } from './domain/user/user.module';
 import { AuthModule } from './application/auth/auth.module';
 import { MediaModule } from './application/media/media.module';
-import { MediaService } from './application/media/media.service';
 
 @Module({
   imports: [
@@ -22,7 +21,7 @@ import { MediaService } from './application/media/media.service';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [__dirname + '/domain/**/*.entity{.ts,.js}'],
+      entities: [__dirname + '**/*.entity{.ts,.js}'],
       synchronize: true,
       namingStrategy: new SnakeNamingStrategy()
     }),
