@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Param, Post, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Get, Param, ParseIntPipe, Post, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { MediaService } from "./media.service";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -25,10 +25,10 @@ export class MediaController {
   }))
   async uploadFile(
     @User() user,
-    @Body() uploadFileReqDto: UploadFileReqDto,
+    @Body('studioId', ParseIntPipe) studioId: number,
     @UploadedFile() file: Express.Multer.File
   ) {
-    return await this.mediaService.uploadMedia(file, uploadFileReqDto.studioId, user.id);
+    return await this.mediaService.uploadMedia(file, studioId, user.id);
   }
 
   @Get(':studioId')

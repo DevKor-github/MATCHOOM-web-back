@@ -33,8 +33,9 @@ export class MediaService {
     const uuid = v4();
     const extension = file.originalname.split('.').pop();
     const filename = `${uuid}.${extension}`;
-    const key = `/images/${studio.id}/${filename}`;
+    const key = `images/${studioId}/${filename}`;
 
+    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
     try {
       await this.s3Cleint.send(
         new PutObjectCommand({
@@ -65,9 +66,11 @@ export class MediaService {
       where: { studio: { id: studioId } },
       select: ['filename'],
       order: { date: 'ASC' }
-    });
+    }); 
 
-    return files;
+    const fileList = files.map(f => `${process.env.AWS_S3_CLOUDFRONT_DOMAIN}/${studioId}/${f.filename}`);
+
+    return fileList;
   }
 
   fileurlMaker(id: number, filename: string[] | string) {
