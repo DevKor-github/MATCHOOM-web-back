@@ -5,30 +5,34 @@ class RegisterReqDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ example: "이름" })
-  name?: string;
+  name: string;
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ example: "01000000000" })
-  phone?: string;
+  phone: string;
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ example: "하나은행" })
-  bank?: string;
+  bank: string;
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ example: "3333333333333" })
-  account?: string;
+  account: string;
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ example: "계좌주/계좌명" })
-  accountHolder?: string;
+  accountHolder: string;
+
 }
 
 class RegisterResDto {
+  @ApiProperty({ example: "xxxx.xxxx.xxxx" })
+  refreshToken: string;
+
   @ApiProperty({ example: "xxxx.xxxx.xxxx" })
   accessToken: string;
 }
