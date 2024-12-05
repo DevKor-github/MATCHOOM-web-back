@@ -1,8 +1,10 @@
-import { BadRequestException, Body, Controller, Get, Param, Post, UploadedFile, UseInterceptors } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Get, Param, Post, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { MediaService } from "./media.service";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { User } from "src/common/decorators/user.decorator";
+import { UserPayload } from "src/common/interfaces/user.interface";
+import { AuthGuard } from "@nestjs/passport";
 
 @Controller('media')
 @ApiTags('media')
@@ -20,8 +22,9 @@ export class MediaController{
             else callback(new BadRequestException('허용되지 않은 확장자입니다'), false)
         }
     }))
+    @UseGuards(AuthGuard('jwt-access'))
     async uploadFile(
-        @User() user,
+        @User() user: UserPayload,
         @Body() studioId: number,
         @UploadedFile() file: Express.Multer.File
     ){
