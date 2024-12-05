@@ -1,3 +1,4 @@
+import { Studio } from "src/domain/studio/entities/studio.entity";
 import { User } from "src/domain/user/entities/user.entity";
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
@@ -20,5 +21,8 @@ export class Point {
 
   @ManyToOne(() => User, user => user.points, { onDelete: 'CASCADE' })
   user: User
+
+  @ManyToOne(() => Studio, (studio) => studio.points, { nullable: true })
+  studio: Studio;
 
 }

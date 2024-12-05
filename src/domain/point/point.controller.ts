@@ -1,12 +1,13 @@
-import { Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { PointService } from './point.service';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from 'src/common/decorators/user.decorator';
 import { UserPayload } from 'src/common/interfaces/user.interface';
 import { Docs } from './docs/point.decorator';
+import { PurchasePointReqDto } from './dtos/purchasePoint.dto';
 
-@Controller(':studioId/point')
+@Controller('point')
 @ApiTags('point')
 export class PointController {
   constructor(
@@ -16,7 +17,7 @@ export class PointController {
   @Get()
   @UseGuards(AuthGuard('jwt-access'))
   @Docs('getMyPoints')
-  async getMyPoints(@Param('studioId') studioId: number, @User() user: UserPayload) {
+  async getMyPoints(@Query('studioId') studioId: number, @User() user: UserPayload) {
     const userId = user.id;
     return await this.pointService.getMyPoints(studioId, userId);
   }
@@ -29,9 +30,11 @@ export class PointController {
   }
   */
 
-  @Post('charge')
+  @Post('purchase')
   @UseGuards(AuthGuard('jwt-access'))
-  async chargePoint(@Param('studioId') studioId: number, @Param('ticketId') ticketId: number, @User() user: UserPayload) {
-    
+  async chargePoint(@Body() purchasePointReqDto: PurchasePointReqDto, @User() user: UserPayload) {
+    const userId = user.id;
+    const { ticketId, studioId } = purchasePointReqDto;
+    return await this.pointService.chargePoint(studioId, userId, ticketId);
   }
 }
