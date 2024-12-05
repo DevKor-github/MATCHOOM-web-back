@@ -9,72 +9,71 @@ import { Media } from './entities/media.entity';
 @Injectable()
 export class MediaService {
 
-    constructor(
-        @InjectRepository(Studio)
-        private studioRepository: Repository<Studio>,
-        @InjectRepository(Media)
-        private mediaRepository: Repository<Media>,
-        @Inject('S3_CLIENT')
-        private readonly s3Cleint: S3Client
-    ){}
-    
-    async uploadMedia(file: Express.Multer.File, studId: number, userId: number){
-        const stud = await this.studioRepository.findOne({
-            where: {id: studId},
-            relations: ['medias', 'admin'] 
-        })
-        if(!stud) throw new NotFoundException
-        
-        const isOwner = stud.admin.some(e => e.id === userId)
-        if(!isOwner) throw new ForbiddenException
+  constructor(
+    @InjectRepository(Studio)
+    private studioRepository: Repository<Studio>,
+    @InjectRepository(Media)
+    private mediaRepository: Repository<Media>,
+    @Inject('S3_CLIENT')
+    private readonly s3Cleint: S3Client
+  ) { }
 
-        const uuid = v4()
-        const extension = file.originalname.split('.').pop()
-        const filename = `${uuid}.${extension}`
-        const key = `/${stud.id}/${filename}`
+  async uploadMedia(file: Express.Multer.File, studioId: number, userId: number) {
+    const studio = await this.studioRepository.findOne({
+      where: { id: studioId },
+      relations: ['medias', 'admin']
+    })
+    if (!studio) throw new NotFoundException("존재하지 않는 스튜디오 입니다.");
 
-        try{
-            await this.s3Cleint.send(
-                new PutObjectCommand({
-                    Bucket: process.env.AWS_S3_BUCKET_NAME,
-                    Key: key,
-                    Body: file.buffer,
-                    ContentType: file.mimetype, 
-            }))
-        }catch(err){
-            throw new InternalServerErrorException(err)
-        }
+    /*
+    const isOwner = studio.admin.some(e => e.id === userId);
+    if (!isOwner) throw new ForbiddenException("");
+    */
 
-        const newMedia = this.mediaRepository.create({
-            studio: stud,
-            filename
-        })
+    const uuid = v4();
+    const extension = file.originalname.split('.').pop();
+    const filename = `${uuid}.${extension}`;
+    const key = `/images/${studio.id}/${filename}`;
 
-        await this.mediaRepository.save(newMedia)
-
-        return {message: 'success', url: this.fileurlMaker(stud.id, filename)}
+    try {
+      await this.s3Cleint.send(
+        new PutObjectCommand({
+          Bucket: process.env.AWS_S3_BUCKET_NAME,
+          Key: key,
+          Body: file.buffer,
+          ContentType: file.mimetype,
+        }));
+    } catch (err) {
+      throw new InternalServerErrorException(err);
     }
 
-    async getFiles(studioId: number){
-        const stud = await this.studioRepository.findOne({
-            where: {id: studioId},
-            relations: ['medias']
-        })
-        if(!stud) throw new NotFoundException
+    const newMedia = this.mediaRepository.create({
+      studio: studio,
+      filename
+    });
 
-        const files = stud.medias.map((e) => ({
-            id: e.id,
-            date: e.date,
-            url: this.fileurlMaker(studioId, e.filename)
-        }))
+    await this.mediaRepository.save(newMedia);
 
-        return files
-    }
+    return { message: 'success', url: this.fileurlMaker(studio.id, filename) };
+  }
 
-    fileurlMaker(id: number, filename: string[] | string){
-        const baseUrl = process.env.CLOUDFRONT_URL;
-        return Array.isArray(filename)
-        ? filename.map((file) => `${baseUrl}/${id}/${file}`)
-        : `${baseUrl}/${id}/${filename}`;
-    }
+  async getFiles(studioId: number) {
+    const studio = await this.studioRepository.findOne({ where: { id: studioId } });
+    if (!studio) throw new NotFoundException("존재하지 않는 스튜디오 입니다.");
+
+    const files = await this.mediaRepository.find({
+      where: { studio: { id: studioId } },
+      select: ['filename'],
+      order: { date: 'ASC' }
+    });
+
+    return files;
+  }
+
+  fileurlMaker(id: number, filename: string[] | string) {
+    const baseUrl = process.env.AWS_S3_CLOUDFRONT_DOMAIN;
+    return Array.isArray(filename)
+      ? filename.map((file) => `${baseUrl}/${id}/${file}`)
+      : `${baseUrl}/${id}/${filename}`;
+  }
 }
