@@ -9,7 +9,8 @@ import { StudioModule } from './domain/studio/studio.module';
 import { LectureModule } from './domain/lecture/lecture.module';
 import { UserModule } from './domain/user/user.module';
 import { AuthModule } from './application/auth/auth.module';
-import { S3Module } from './application/s3/s3.module';
+import { MediaModule } from './application/media/media.module';
+import { TicketModule } from './domain/ticket/ticket.module';
 import { PointModule } from './domain/point/point.module';
 
 @Module({
@@ -22,15 +23,15 @@ import { PointModule } from './domain/point/point.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [__dirname + '/domain/**/*.entity{.ts,.js}'],
       synchronize: true,
-      namingStrategy: new SnakeNamingStrategy()
+      namingStrategy: new SnakeNamingStrategy(),
+      autoLoadEntities: true
     }),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: process.env.JWT_EXPIRES_IN }
     }),
-    StudioModule, LectureModule, UserModule, AuthModule, S3Module, PointModule],
+    StudioModule, LectureModule, UserModule, AuthModule, MediaModule, TicketModule, PointModule],
   controllers: [AppController],
   providers: [AppService],
 })
