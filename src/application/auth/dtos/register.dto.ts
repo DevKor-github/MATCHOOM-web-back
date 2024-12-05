@@ -1,26 +1,36 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsNotEmpty, IsOptional, IsString, Length } from 'class-validator';
+import {  IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 class RegisterReqDto {
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   @ApiProperty({ example: "이름" })
   name?: string;
 
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   @ApiProperty({ example: "01000000000" })
   phone?: string;
 
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   @ApiProperty({ example: "하나은행" })
   bank?: string;
 
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   @ApiProperty({ example: "3333333333333" })
   account?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ example: "계좌주/계좌명" })
+  accountHolder?: string;
 }
 
-export { RegisterReqDto }
+class RegisterResDto {
+  @ApiProperty({ example: "xxxx.xxxx.xxxx" })
+  accessToken: string;
+}
+
+export { RegisterReqDto, RegisterResDto }
