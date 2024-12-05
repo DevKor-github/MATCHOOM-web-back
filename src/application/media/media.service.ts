@@ -68,7 +68,7 @@ export class MediaService {
       order: { date: 'ASC' }
     }); 
 
-    const fileList = files.map(f => `${process.env.AWS_S3_CLOUDFRONT_DOMAIN}/${studioId}/${f.filename}`);
+    const fileList = files.map(f => `${process.env.AWS_S3_CLOUDFRONT_DOMAIN}/images/${studioId}/${f.filename}`);
 
     return fileList;
   }
