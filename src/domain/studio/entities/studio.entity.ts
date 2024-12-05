@@ -2,6 +2,7 @@ import { Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn 
 import { Announcement } from "./announcement.entity";
 import { Lecture } from "src/domain/lecture/entities/lecture.entity";
 import { User } from "src/domain/user/entities/user.entity";
+import { Media } from "src/application/media/entities/media.entity";
 
 @Entity()
 export class Studio{
@@ -26,7 +27,6 @@ export class Studio{
     @ManyToOne(()=> User, (user)=> user.studio)
     admin: User[]
     
-    /*@OneToMany()
-    files: Attachments[]
-    */
+    @OneToMany(()=> Media, (media) => media.studio)
+    medias: Media[]
 }
