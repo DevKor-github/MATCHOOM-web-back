@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Studio } from "src/domain/studio/entities/studio.entity";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Ticket {
@@ -13,4 +14,7 @@ export class Ticket {
 
   @Column()
   price: number;
+
+  @ManyToOne(() => Studio, (studio) => studio.tickets, { nullable: true })
+  studio: Studio
 }
