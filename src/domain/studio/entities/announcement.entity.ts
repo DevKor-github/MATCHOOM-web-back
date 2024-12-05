@@ -9,7 +9,7 @@ export class Announcement{
     @Column({type: 'varchar', length: 30, update: false})
     title: string
 
-    @CreateDateColumn({type: 'timestamp'})
+    @CreateDateColumn()
     created: Date
 
     @Column({type: 'varchar', length: 500, update: false})
