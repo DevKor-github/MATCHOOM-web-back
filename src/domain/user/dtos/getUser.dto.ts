@@ -8,6 +8,7 @@ class GetUserResDto {
     this.bank = user.bank;
     this.account = user.account;
     this.accountHolder = user.accountHolder;
+    this.isOnboarding = user.isOnboarding;
     this.isStudio = user.isStudio;
   }
 
@@ -25,6 +26,9 @@ class GetUserResDto {
 
   @ApiProperty({ example: "계좌주/계좌명" })
   accountHolder: string;
+
+  @ApiProperty({ example: "true: 회원가입 미완료, false: 회원가입 완료" })
+  isOnboarding: boolean;
 
   @ApiProperty({ example: "true: 스튜디오, false: 일반 유저" })
   isStudio: boolean;
