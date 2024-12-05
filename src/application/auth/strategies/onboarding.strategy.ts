@@ -1,14 +1,12 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { PassportStrategy } from "@nestjs/passport";
-import { ExtractJwt, Strategy } from "passport-jwt";
-import { JwtPayload } from "../interfaces/jwt-payload.interface";
-import { Request } from "express";
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { PassportStrategy } from '@nestjs/passport';
+import { Strategy, ExtractJwt } from 'passport-jwt';
+import { JwtPayload } from '../interfaces/jwt-payload.interface';
+import { Request } from 'express';
 
 @Injectable()
-export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
-  constructor(
-
-  ) {
+export class RegisterStrategy extends PassportStrategy(Strategy, 'register') {
+  constructor() {
     /*
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
@@ -17,6 +15,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
       secretOrKey: process.env.JWT_REFRESH_SECRET,
     });
     */
+
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: process.env.JWT_REFRESH_SECRET,
@@ -29,7 +28,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
     if (!refreshToken) throw new UnauthorizedException("refresh token을 수신하지 못했습니다.");
 
     const { sub, isOnboarding } = payload;
-    if (isOnboarding) throw new UnauthorizedException("회원가입 절차를 완료하지 않은 사용자 입니다.");
+    if (!isOnboarding) throw new UnauthorizedException("이미 회원가입 절차를 완료한 사용자 입니다.");
 
     return { id: sub }
   }

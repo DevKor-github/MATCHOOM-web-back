@@ -7,6 +7,8 @@ class GetUserResDto {
     this.phone = user.phone;
     this.bank = user.bank;
     this.account = user.account;
+    this.accountHolder = user.accountHolder;
+    this.isStudio = user.isStudio;
   }
 
   @ApiProperty({ example: "이름" })
@@ -20,6 +22,12 @@ class GetUserResDto {
 
   @ApiProperty({ example: "33333333333" })
   account: string;
+
+  @ApiProperty({ example: "계좌주/계좌명" })
+  accountHolder: string;
+
+  @ApiProperty({ example: "true: 스튜디오, false: 일반 유저" })
+  isStudio: boolean;
 }
 
 export { GetUserResDto }

@@ -11,6 +11,7 @@ export class SocialLoginGuard implements CanActivate {
     const provider = req.body.provider;
     const guard = this.getGuardbyProvider(provider);
 
+    console.log(provider);
     return guard.canActivate(context) as Promise<boolean>;
   }
 

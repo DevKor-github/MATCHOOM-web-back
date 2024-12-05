@@ -9,7 +9,7 @@ import { StudioModule } from './domain/studio/studio.module';
 import { LectureModule } from './domain/lecture/lecture.module';
 import { UserModule } from './domain/user/user.module';
 import { AuthModule } from './application/auth/auth.module';
-import { S3Module } from './application/s3/s3.module';
+import { MediaModule } from './application/media/media.module';
 import { TicketModule } from './domain/ticket/ticket.module';
 
 @Module({
@@ -22,7 +22,7 @@ import { TicketModule } from './domain/ticket/ticket.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [__dirname + '/domain/**/*.entity{.ts,.js}'],
+      entities: [__dirname + '**/*.entity{.ts,.js}'],
       synchronize: true,
       namingStrategy: new SnakeNamingStrategy()
     }),
@@ -30,7 +30,7 @@ import { TicketModule } from './domain/ticket/ticket.module';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: process.env.JWT_EXPIRES_IN }
     }),
-    StudioModule, LectureModule, UserModule, AuthModule, S3Module, TicketModule],
+    StudioModule, LectureModule, UserModule, AuthModule, MediaModule, TicketModule],
   controllers: [AppController],
   providers: [AppService],
 })
