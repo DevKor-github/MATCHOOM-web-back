@@ -9,7 +9,8 @@ import { StudioModule } from './domain/studio/studio.module';
 import { LectureModule } from './domain/lecture/lecture.module';
 import { UserModule } from './domain/user/user.module';
 import { AuthModule } from './application/auth/auth.module';
-import { S3Module } from './application/s3/s3.module';
+import { MediaModule } from './application/media/media.module';
+import { MediaService } from './application/media/media.service';
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { S3Module } from './application/s3/s3.module';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: process.env.JWT_EXPIRES_IN }
     }),
-    StudioModule, LectureModule, UserModule, AuthModule, S3Module],
+    StudioModule, LectureModule, UserModule, AuthModule, MediaModule],
   controllers: [AppController],
   providers: [AppService],
 })
