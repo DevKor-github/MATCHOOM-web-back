@@ -57,8 +57,4 @@ export class Lecture{
     @ManyToOne(() => Media, (media) => media.lectures)
     file: Media
     
-    /*
-    @ManyToOne(()=> LectureGroup, (lecturegroup)=>lecturegroup.lectures, {onDelete: 'CASCADE'})
-    group: LectureGroup
-    */
 }
