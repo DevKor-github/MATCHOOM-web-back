@@ -1,11 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { TicketService } from './ticket.service';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateTicketReqDto } from './dtos/createTicket.dto';
 import { UpdateTicketReqDto } from './dtos/updateTicket.dto';
 import { Docs } from './docs/ticket.decorator';
 
-@Controller(':studioId/ticket')
+@Controller('ticket')
 @ApiTags('ticket')
 export class TicketController {
   constructor(
@@ -14,7 +14,7 @@ export class TicketController {
 
   @Get()
   @Docs('getAllTickets')
-  async getAllTickets(@Param('studioId') studioId: number) {
+  async getAllTickets(@Query('studioId') studioId: number) {
     return await this.ticketService.getAllTickets(studioId);
   }
 
@@ -23,6 +23,14 @@ export class TicketController {
   async getTicketInfo(@Param('studioId') studioId: number, @Param('ticketId') ticketId: number) {
     return await this.ticketService.getTicketInfo(studioId, ticketId);
   }
+}
+
+@Controller(':studioId/ticket')
+@ApiTags('ticket(백엔드용)')
+export class TicketControllerForBack{
+  constructor(
+    private readonly ticketService: TicketService
+  ) { }
 
   @Post()
   @Docs('createTicket')

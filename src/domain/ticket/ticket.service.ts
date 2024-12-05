@@ -19,7 +19,6 @@ export class TicketService {
   async getAllTickets(studioId: number) {
     return await this.ticketRepository.find({ 
       where: { studio: { id: studioId } }, 
-      relations: ['studio'],
       select: ['id', 'name', 'price']
     });
   }
