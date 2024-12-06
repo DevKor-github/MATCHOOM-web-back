@@ -22,7 +22,8 @@ export class LectureService {
             where: {id: userId}, 
             relations: ['studio', 'studio.medias']
         })
-        if(!usr.studio) throw new ForbiddenException
+        if(!usr) throw new NotFoundException("유저 X")
+        if(!usr.studio) throw new ForbiddenException("스튜디오 관계 존재 X")
 
         const {startDiff, startTime, endDiff, endTime} = createLectureDto.applyTime
         const [startH, startM] = startTime.split(':').map(Number)
