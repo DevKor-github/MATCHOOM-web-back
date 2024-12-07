@@ -6,10 +6,11 @@ import { Lecture } from './entities/lecture.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { User } from '../user/entities/user.entity';
 import { Studio } from '../studio/entities/studio.entity';
+import { Media } from 'src/application/media/entities/media.entity';
 
 @Module({
   imports:[
-    TypeOrmModule.forFeature([Lecture, User, Studio]),
+    TypeOrmModule.forFeature([Lecture, User, Media]),
     JwtModule.register({})
   ],
   providers: [LectureService],

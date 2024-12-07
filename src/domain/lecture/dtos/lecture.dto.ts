@@ -61,7 +61,7 @@ class CreateLectureDto{
 
     @IsUrl()
     @IsOptional()
-    musicLink: string
+    musicLink?: string
 
     //Validator Decorator 추가
     applyTime: {

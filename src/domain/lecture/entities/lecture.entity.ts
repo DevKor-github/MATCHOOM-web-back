@@ -35,10 +35,10 @@ export class Lecture{
     @Column()
     room: string;
 
-    @Column()
+    @Column({nullable: true})
     difficulty: number
 
-    @Column("simple-array")
+    @Column({nullable: true})
     genre: number
 
     @Column({type: "varchar", length: 500, nullable: true})
@@ -46,6 +46,9 @@ export class Lecture{
     
     @Column()
     price: number
+
+    @Column({nullable: true})
+    musicLink: string
     
     @ManyToOne(()=> Studio, (studio)=>studio.lectures, {onDelete: "CASCADE"})
     studio: Studio
@@ -57,8 +60,4 @@ export class Lecture{
     @ManyToOne(() => Media, (media) => media.lectures)
     file: Media
     
-    /*
-    @ManyToOne(()=> LectureGroup, (lecturegroup)=>lecturegroup.lectures, {onDelete: 'CASCADE'})
-    group: LectureGroup
-    */
 }

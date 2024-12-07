@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import { CreateLectureDto, DeleteLectureDto, GetLectureDto, LectureApplyDto } from './dtos/lecture.dto';
 import { Studio } from '../studio/entities/studio.entity';
+import { Media } from 'src/application/media/entities/media.entity';
 
 @Injectable()
 export class LectureService {
@@ -13,8 +14,8 @@ export class LectureService {
         private lectureRepository: Repository<Lecture>,
         @InjectRepository(User)
         private userRepository: Repository<User>,
-        @InjectRepository(Studio)
-        private studioRepository: Repository<Studio>
+        @InjectRepository(Media)
+        private mediaRepository: Repository<Media>
     ){}
 
     async createLecture(createLectureDto: CreateLectureDto, userId: number){
@@ -22,7 +23,8 @@ export class LectureService {
             where: {id: userId}, 
             relations: ['studio', 'studio.medias']
         })
-        if(!usr.studio) throw new ForbiddenException
+        if(!usr) throw new NotFoundException("유저 X")
+        if(!usr.studio) throw new ForbiddenException("스튜디오 관계 존재 X")
 
         const {startDiff, startTime, endDiff, endTime} = createLectureDto.applyTime
         const [startH, startM] = startTime.split(':').map(Number)
@@ -37,28 +39,24 @@ export class LectureService {
         applyEnd.setDate(applyEnd.getDate() - endDiff)
         applyEnd.setHours(endH, endM, 0, 0)
 
+
+        const { name, instructor, maxCapacity, minCapacity, room, price, difficulty, type, genre, description, musicLink } = createLectureDto
+
         const toCreate: Partial<Lecture> = {
-            applyStart, applyEnd
-        }
-        
-        toCreate['applyStart'], toCreate['applyEnd'] = applyStart, applyEnd
-        
-        if(createLectureDto.fileId){
-            const mediaOwn = usr.studio.medias.find((m) => m.id === createLectureDto.fileId)
-            if(!mediaOwn) throw new ForbiddenException("잘못된 fileId")
+            name, instructor, applyStart, applyEnd, maxCapacity, minCapacity, room, price, difficulty, type, genre, description, musicLink,
+            studio: usr.studio,
         }
 
-        for(const key in createLectureDto){
-            if (
-                key !== 'applyTime' &&
-                createLectureDto[key] !== undefined && 
-                createLectureDto[key] !== null
-            ){ 
-                toCreate[key] = createLectureDto[key]
-            }
+        if(createLectureDto.fileId && usr.studio.medias){
+            const mediaOwn = usr.studio.medias.find((m) => m.id === createLectureDto.fileId)
+            if(!mediaOwn) throw new ForbiddenException("잘못된 fileId")
+            const media = await this.mediaRepository.findOne({
+                where: {id: createLectureDto.fileId, studio:{id: usr.studio.id}}
+            })
+            if(!media) throw new NotFoundException("해당하는 파일을 찾을 수 없습니다.")
+            toCreate['file'] = media
         }
         
-        toCreate['studio'] = usr.studio
         const newLecture = this.lectureRepository.create(toCreate)
         const res = await this.lectureRepository.save(newLecture)
         
