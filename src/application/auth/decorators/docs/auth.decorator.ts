@@ -2,6 +2,7 @@ import { applyDecorators } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiConflictResponse, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { SocialLoginReqDto, SocialLoginResDto } from '../../dtos/socialLogin.dto';
 import { RegisterReqDto, RegisterResDto } from '../../dtos/register.dto';
+import { RenewTokenResponseDto } from '../../dtos/renewToken.dto';
 
 type EndPoints =
   | 'register'
@@ -57,7 +58,8 @@ export function Docs(endPoint: EndPoints) {
       }),
       ApiBearerAuth(),
       ApiCreatedResponse({
-        description: "토큰 갱신 성공"
+        description: "토큰 갱신 성공",
+        type: RenewTokenResponseDto
       }),
       ApiUnauthorizedResponse({
         description: "유효하지 않은 refresh token 입니다."
@@ -68,6 +70,7 @@ export function Docs(endPoint: EndPoints) {
         description: "로그아웃. cookie의 refresh-token clear",
         summary: "로그아웃"
       }),
+      ApiBearerAuth(),
       ApiOkResponse({
         description: "로그아웃 성공"
       })

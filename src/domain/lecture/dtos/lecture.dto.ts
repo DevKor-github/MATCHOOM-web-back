@@ -16,7 +16,6 @@ class CreateLectureDto{
     @ApiProperty({example: "Studio에 연결된 File 테이블에서의 File id"})
     fileId?: number
 
-    @IsDateString()
     @ApiProperty({example: "강의 시간 As DateString[]"})
     lectureTime: {start: Date, end: Date}[]
 

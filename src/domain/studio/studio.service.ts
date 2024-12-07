@@ -19,7 +19,7 @@ export class StudioService {
     async getStudioInfo(id: number){
         const stud = await this.studioRepository.findOne({
             where: {id: id},
-            relations: ['lectures']
+            relations: ['lectures', 'thumbnail']
         })
         if(!stud) throw new NotFoundException
 
@@ -35,6 +35,7 @@ export class StudioService {
             name: stud.name,
             description: stud.description,
             policy: stud.policy,
+            thumbnail: `${process.env.CLOUDFRONT_URL}/$${id}/${stud.thumbnail.filename}`,
             lectures
         }
     }
