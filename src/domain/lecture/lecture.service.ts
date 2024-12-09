@@ -49,16 +49,18 @@ export class LectureService {
 
         console.log(toCreate)
 
-        if(createLectureDto.fileId && usr.studio.medias){
+        if((createLectureDto.fileId === null ||  createLectureDto.fileId === undefined) && usr.studio.medias){
             const mediaOwn = usr.studio.medias.find((m) => m.id === createLectureDto.fileId)
+            console.log(mediaOwn)
             if(!mediaOwn) throw new ForbiddenException("잘못된 fileId")
             const media = await this.mediaRepository.findOne({
-                where: {id: createLectureDto.fileId, studio:{id: usr.studio.id}}
+                where: {id: createLectureDto.fileId}
             })
+            console.log(media)
             if(!media) throw new NotFoundException("해당하는 파일을 찾을 수 없습니다.")
             toCreate['file'] = media
+            console.log(toCreate)
         }
-        
         console.log(toCreate)
 
         const newLecture = this.lectureRepository.create(toCreate)
