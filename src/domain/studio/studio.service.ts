@@ -1,7 +1,6 @@
 import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Studio } from './entities/studio.entity';
-import { Lecture } from '../lecture/entities/lecture.entity';
 import { Repository } from 'typeorm';
 import { GetLectureDto } from '../lecture/dtos/lecture.dto';
 import { PostAnnouncement } from './dtos/announcement.dto';
@@ -57,7 +56,7 @@ export class StudioService {
             relations: ['admin']
         })
         if(!stud) throw new NotFoundException
-        const isAdmin = stud.admin.some((e) => e.id === userId)
+        const isAdmin = stud.admin.id === userId
         if(!isAdmin) throw new ForbiddenException
 
         const newAnnouncement: Partial<Announcement> = {...toCreate, studio: stud}
@@ -73,7 +72,7 @@ export class StudioService {
             relations: ['studio.admin']
         })
         if(!an) throw new NotFoundException
-        const isAdmin = an.studio.admin.some((e) => e.id === userId)
+        const isAdmin = an.studio.admin.id === userId
         if(!isAdmin) throw new ForbiddenException
 
         try{
