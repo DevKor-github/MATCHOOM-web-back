@@ -59,6 +59,8 @@ export class LectureService {
             toCreate['file'] = media
         }
         
+        console.log(toCreate)
+
         const res = await this.lectureRepository.save(toCreate)
         
         return res
