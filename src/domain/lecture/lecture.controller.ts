@@ -15,7 +15,7 @@ export class LectureController {
 
     @Get(':id/info')
     async getLectureInfo(@Param('id') id: number){
-        return this.lectureService.getLectureInfo(id)
+        return await this.lectureService.getLectureInfo(id)
     }
 
     @Post('apply')
@@ -24,7 +24,7 @@ export class LectureController {
         @Body() lectureApplyDto: LectureApplyDto,
         @User() user: UserPayload
     ){
-        return this.lectureService.applyLecture(lectureApplyDto, user.id)
+        return await this.lectureService.applyLecture(lectureApplyDto, user.id)
     }
 
     @Post()
@@ -33,7 +33,7 @@ export class LectureController {
         @Body() createLectureDto: CreateLectureDto, 
         @User() user: UserPayload
     ){
-        return this.lectureService.createLecture(createLectureDto, user.id)
+        return await this.lectureService.createLecture(createLectureDto, user.id)
     }
 
     @Delete()
@@ -42,7 +42,7 @@ export class LectureController {
         @Body() deleteLectureDto: DeleteLectureDto,
         @User() user: UserPayload
     ){
-        return this.lectureService.deleteLecture(deleteLectureDto, user.id)
+        return await this.lectureService.deleteLecture(deleteLectureDto, user.id)
     }
 
 }

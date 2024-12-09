@@ -14,11 +14,11 @@ export class Lecture{
     @Column()
     instructor: string
 
-    @Column()
+    @Column({nullable: true})
     type: string
 
-    @Column({type: 'json'})
-    lectureTime: {start: Date, end: Date}[]
+    @Column({type: 'json', nullable: true})
+    lectureTime: {start: string, end: string}[]
 
     @Column()
     maxCapacity: number;
@@ -59,5 +59,4 @@ export class Lecture{
 
     @ManyToOne(() => Media, (media) => media.lectures)
     file: Media
-    
 }
