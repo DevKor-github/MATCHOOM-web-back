@@ -57,7 +57,6 @@ export class Lecture{
     @JoinTable()
     student: User[]
 
-    @ManyToOne(() => Media, (media) => media.lectures)
+    @OneToMany(() => Media, (media) => media.lectures)
     file: Media
-    
 }

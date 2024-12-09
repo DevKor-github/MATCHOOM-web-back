@@ -61,7 +61,8 @@ export class LectureService {
         
         console.log(toCreate)
 
-        const res = await this.lectureRepository.save(toCreate)
+        const newLecture = this.lectureRepository.create(toCreate)
+        const res = await this.lectureRepository.save(newLecture)
         
         return res
     }
