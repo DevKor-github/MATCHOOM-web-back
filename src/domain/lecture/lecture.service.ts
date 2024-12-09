@@ -82,13 +82,13 @@ export class LectureService {
     async getLectureInfo(lectureId: number){
         const lec = await this.lectureRepository.findOne({
             where: {id: lectureId},
-            relations: ['studio']
+            relations: ['studio', 'file']
         })
         if(!lec) throw new NotFoundException(`ID ${lectureId}에 해당하는 강의는 없습니다.`)
         const res: GetLectureDto = {
             lectureId: lec.id,
             thumbnail: lec.file
-                ? `${process.env.CLOUDFRONT_URL}/$${lec.studio.id}/${lec.file.filename}`
+                ? `${process.env.AWS_S3_CLOUDFRONT_DOMAIN}/images/${lec.studio.id}/${lec.file.filename}`
                 : `default`,
             studioName: lec.studio?.name ?? null,
             instructor: lec.instructor,
