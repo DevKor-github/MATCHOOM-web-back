@@ -20,9 +20,10 @@ export class LectureService {
 
     async createLecture(createLectureDto: CreateLectureDto, userId: number){
         const usr = await this.userRepository.findOne({
-            where: {id: userId}, 
+            where: { id: userId },
             relations: ['studio', 'studio.medias']
         })
+        console.log(usr.studio)
         if(!usr) throw new NotFoundException("유저 X")
         if(!usr.studio) throw new ForbiddenException("스튜디오 관계 존재 X")
 
@@ -42,31 +43,35 @@ export class LectureService {
 
         const { name, instructor, maxCapacity, minCapacity, room, price, difficulty, type, genre, description, musicLink } = createLectureDto
 
-        const toCreate: Partial<Lecture> = {
-            name, instructor, applyStart, applyEnd, maxCapacity, minCapacity, room, price, difficulty, type, genre, description, musicLink,
+        const toCreate = {
+            name, instructor, applyStart, applyEnd, maxCapacity, minCapacity, 
+            room, price, difficulty, type, genre, description, musicLink,
             studio: usr.studio,
         }
 
-        console.log(toCreate)
-
-        if((createLectureDto.fileId === null ||  createLectureDto.fileId === undefined) && usr.studio.medias){
+        if (createLectureDto.fileId && usr.studio.medias) {
             const mediaOwn = usr.studio.medias.find((m) => m.id === createLectureDto.fileId)
-            console.log(mediaOwn)
-            if(!mediaOwn) throw new ForbiddenException("잘못된 fileId")
+            if (!mediaOwn) {
+                throw new ForbiddenException("잘못된 fileId")
+            }
+            
             const media = await this.mediaRepository.findOne({
                 where: {id: createLectureDto.fileId}
             })
-            console.log(media)
-            if(!media) throw new NotFoundException("해당하는 파일을 찾을 수 없습니다.")
+            if (!media) {
+                throw new NotFoundException("해당하는 파일을 찾을 수 없습니다.")
+            }
+            
             toCreate['file'] = media
-            console.log(toCreate)
         }
-        console.log(toCreate)
 
-        const newLecture = this.lectureRepository.create(toCreate)
-        const res = await this.lectureRepository.save(newLecture)
-        
-        return res
+        try {
+            const newLecture = await this.lectureRepository.save(toCreate)
+            return newLecture
+        } catch (error) {
+            console.error('강의 생성 중 오류 발생:', error)
+            throw new Error('강의 생성에 실패했습니다.')
+        }
     }
 
     async deleteLecture(deleteLectureDto: DeleteLectureDto, userId: number){
@@ -77,7 +82,7 @@ export class LectureService {
         })
         if(!lec) throw new NotFoundException
 
-        const isOwner = lec.studio.admin.some(e => e.id === userId)
+        const isOwner = lec.studio.admin.id === userId
         if(!isOwner) throw new ForbiddenException
 
         else this.lectureRepository.delete(lectureId)
