@@ -14,7 +14,7 @@ export class Lecture{
     @Column()
     instructor: string
 
-    @Column()
+    @Column({nullable: true})
     type: string
 
     @Column({type: 'json'})
