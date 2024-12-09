@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Expose } from "class-transformer";
-import { IsDateString, IsInt, IsNumber, IsOptional, IsString, IsUrl, Max, MaxLength, Min } from "class-validator";
+import { Expose, Type } from "class-transformer";
+import { IsInt, IsNumber, IsOptional, IsString, IsUrl, Max, MaxLength, Min, Validate, ValidateNested } from "class-validator";
+import { ApplyTimeDto, LectureTimeDto } from "./time.dto"
 
 class CreateLectureDto{
     @IsString()
@@ -16,8 +17,10 @@ class CreateLectureDto{
     @ApiProperty({example: "Studio에 연결된 File 테이블에서의 File id"})
     fileId?: number
 
-    @ApiProperty({example: "강의 시간 As DateString[]"})
-    lectureTime: {start: Date, end: Date}[]
+    @ApiProperty({ example: [ { start: '2024-12-09T16:52:00.000Z', end: '2024-12-09T17:52:00.000Z' },],})
+    @ValidateNested({each: true})
+    @Type(() => LectureTimeDto)
+    lectureTime: LectureTimeDto[]
 
     @IsNumber()
     maxCapacity: number
@@ -62,13 +65,9 @@ class CreateLectureDto{
     @IsOptional()
     musicLink?: string
 
-    //Validator Decorator 추가
-    applyTime: {
-        startDiff: number
-        startTime: string
-        endDiff: number
-        endTime: string
-    }
+    @ValidateNested()
+    @Type(() => ApplyTimeDto)
+    applyTime: ApplyTimeDto
 }
 
 class GetLectureDto{
