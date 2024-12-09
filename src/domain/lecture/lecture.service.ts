@@ -82,7 +82,7 @@ export class LectureService {
     async getLectureInfo(lectureId: number){
         const lec = await this.lectureRepository.findOne({
             where: {id: lectureId},
-            relations: ['studio.name', 'studio.id']
+            relations: ['studio']
         })
         if(!lec) throw new NotFoundException(`ID ${lectureId}에 해당하는 강의는 없습니다.`)
         const res: GetLectureDto = {
