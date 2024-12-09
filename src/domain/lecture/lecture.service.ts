@@ -47,6 +47,8 @@ export class LectureService {
             studio: usr.studio,
         }
 
+        console.log(toCreate)
+
         if(createLectureDto.fileId && usr.studio.medias){
             const mediaOwn = usr.studio.medias.find((m) => m.id === createLectureDto.fileId)
             if(!mediaOwn) throw new ForbiddenException("잘못된 fileId")
@@ -57,8 +59,7 @@ export class LectureService {
             toCreate['file'] = media
         }
         
-        const newLecture = this.lectureRepository.create(toCreate)
-        const res = await this.lectureRepository.save(newLecture)
+        const res = await this.lectureRepository.save(toCreate)
         
         return res
     }
