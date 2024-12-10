@@ -64,11 +64,15 @@ export class MediaService {
 
     const files = await this.mediaRepository.find({
       where: { studio: { id: studioId } },
-      select: ['filename'],
+      select: ['id', 'filename'],
       order: { date: 'ASC' }
     }); 
 
-    const fileList = files.map(f => `${process.env.AWS_S3_CLOUDFRONT_DOMAIN}/images/${studioId}/${f.filename}`);
+    const fileList = files.map(f => ({ 
+      id: f.id, 
+      path: `${process.env.AWS_S3_CLOUDFRONT_DOMAIN}/images/${studioId}/${f.filename}`
+    }));
+    console.log(fileList);
 
     return fileList;
   }
