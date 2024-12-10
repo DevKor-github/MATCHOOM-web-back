@@ -1,5 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiConsumes, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiParam, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { GetFilesDto } from '../../dtos/getFiles.dto';
 
 type EndPoints =
   | 'upload'
@@ -53,6 +54,7 @@ export function Docs(endPoint: EndPoints) {
         description: "스튜디오 고유 id"
       }),
       ApiOkResponse({
+        type: [GetFilesDto],
         description: "파일(이미지) 목록 조회 성공"
       }),
       ApiNotFoundResponse({
