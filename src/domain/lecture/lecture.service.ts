@@ -23,7 +23,6 @@ export class LectureService {
             where: { id: userId },
             relations: ['studio', 'studio.medias']
         })
-        console.log(usr.studio)
         if(!usr) throw new NotFoundException("유저 X")
         if(!usr.studio) throw new ForbiddenException("스튜디오 관계 존재 X")
 
