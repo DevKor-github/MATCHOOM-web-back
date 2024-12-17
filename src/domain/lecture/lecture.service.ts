@@ -40,11 +40,12 @@ export class LectureService {
         applyEnd.setHours(endH, endM, 0, 0)
 
 
-        const { name, instructor, maxCapacity, minCapacity, room, price, difficulty, type, genre, description, musicLink } = createLectureDto
+        const { name, instructor, maxCapacity, minCapacity, room, price, 
+            difficulty, type, genre, description, musicLink, lectureTime } = createLectureDto
 
         const toCreate = {
             name, instructor, applyStart, applyEnd, maxCapacity, minCapacity, 
-            room, price, difficulty, type, genre, description, musicLink,
+            room, price, difficulty, type, genre, description, musicLink, lectureTime,
             studio: usr.studio,
         }
 
@@ -65,8 +66,18 @@ export class LectureService {
         }
 
         try {
-            const newLecture = await this.lectureRepository.save(toCreate)
-            return newLecture
+            await this.lectureRepository.save(toCreate)
+            
+            const updatedStudio = await this.userRepository.findOne({
+                where: { id: userId },
+                relations: ['studio', 'studio.lectures', 'studio.thumbnail']
+            })
+            
+            return {
+                studioName: updatedStudio?.studio.name,
+                thumbnail: updatedStudio?.studio.thumbnail?.filename || null,
+                lectures: updatedStudio?.studio.lectures
+            }
         } catch (error) {
             console.error('강의 생성 중 오류 발생:', error)
             throw new Error('강의 생성에 실패했습니다.')
