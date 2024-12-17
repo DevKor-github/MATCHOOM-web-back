@@ -55,7 +55,7 @@ export class StudioController {
     @ApiResponse({ status: 200, description: '스튜디오 공지사항 삭제 성공' })
     @ApiResponse({ status: 404, description: '스튜디오 공지사항 삭제 실패' })
     async deleteStudioAnnouncement(
-        @Query('id') id: number,
+        @Body('id') id: number,
         @User() user: UserPayload
     ){
         return this.studioService.deleteAnnouncement(id, user.id)
