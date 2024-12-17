@@ -26,15 +26,14 @@ export class StudioController {
         return this.studioService.getStudioAnnouncement(id)
     }
 
-    @Post(':id/announcement')
+    @Post('announcement')
     @UseGuards(AuthGuard('jwt-access'))
     @Docs('postStudioAnnouncement')
     async postStudioAnnouncement(
-        @Param('id') id: number,
         @Body() postAnnouncement: PostAnnouncement,
         @User() user: UserPayload
     ){
-        return this.studioService.postStudioAnnouncement(id, user.id, postAnnouncement)
+        return this.studioService.postStudioAnnouncement(user.id, postAnnouncement)
     }
 
     @Delete('announcement')
