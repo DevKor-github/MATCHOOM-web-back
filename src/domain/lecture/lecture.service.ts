@@ -94,10 +94,13 @@ export class LectureService {
 
         const isOwner = lec.studio.admin.id === userId
         if(!isOwner) throw new ForbiddenException
-
-        else this.lectureRepository.delete(lectureId)
-
-        return {message: `Deleted Lecture successfully`}
+        try {
+            await this.lectureRepository.delete(lectureId);
+            return { message: `강의가 성공적으로 삭제되었습니다.` };
+        } catch (error) {
+            console.error('강의 삭제 중 오류 발생:', error);
+            throw new Error('강의 삭제에 실패했습니다.');
+        }
     }
 
     async getLectureInfo(lectureId: number){
