@@ -1,8 +1,8 @@
 import { applyDecorators } from '@nestjs/common';
 import {
   ApiOperation,
-  ApiParam,
   ApiBody,
+  ApiParam,
   ApiResponse,
   ApiBearerAuth,
 } from '@nestjs/swagger';
@@ -39,7 +39,7 @@ export function Docs(endPoint: EndPoints) {
     case 'deleteLecture':
       return applyDecorators(
         ApiOperation({ summary: '강의 삭제' }),
-        ApiBody({ type: DeleteLectureDto, description: '강의 삭제 데이터' }),
+        ApiBody({ type: DeleteLectureDto, description: '강의 삭제 데이터', required: true }),
         ApiBearerAuth('jwt-access'),
         ApiResponse({ status: 200, description: '강의 삭제 성공' }),
       );
