@@ -94,6 +94,12 @@ export class LectureService {
 
         const isOwner = lec.studio.admin.id === userId
         if(!isOwner) throw new ForbiddenException
+
+        const now = new Date()
+        if (lec.applyStart <= now && now <= lec.applyEnd) {
+            throw new ForbiddenException("신청기간 중에는 강의를 삭제할 수 없습니다.")
+        }
+        
         try {
             await this.lectureRepository.delete(lectureId);
             return { message: `강의가 성공적으로 삭제되었습니다.` };
