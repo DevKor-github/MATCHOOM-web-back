@@ -26,7 +26,7 @@ export class Studio{
     @Column()
     policy: string
 
-    @OneToOne(() => User)
+    @OneToOne(() => User, user => user.studio)
     admin: User
     
     @OneToMany(()=> Media, (media) => media.studio)
