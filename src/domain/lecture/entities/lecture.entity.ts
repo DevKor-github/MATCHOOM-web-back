@@ -18,7 +18,7 @@ export class Lecture{
     type: string
 
     @Column({type: 'json', nullable: true})
-    lectureTime: {start: string, end: string}[]
+    lectureTime: {start: Date, end: Date}[]
 
     @Column()
     maxCapacity: number;
