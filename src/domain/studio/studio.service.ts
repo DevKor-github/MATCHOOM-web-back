@@ -1,10 +1,11 @@
 import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Studio } from './entities/studio.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { GetLectureDto } from '../lecture/dtos/lecture.dto';
 import { GetAnnouncement, PostAnnouncement } from './dtos/announcement.dto';
 import { Announcement } from './entities/announcement.entity';
+import { User } from '../user/entities/user.entity';
 
 @Injectable()
 export class StudioService {
@@ -12,7 +13,9 @@ export class StudioService {
         @InjectRepository(Announcement)
         private announcementRepository: Repository<Announcement>,
         @InjectRepository(Studio)
-        private studioRepository: Repository<Studio>
+        private studioRepository: Repository<Studio>,
+        @InjectRepository(User)
+        private userRepository: Repository<User>
     ){}
 
     async getStudioInfo(id: number){
@@ -61,24 +64,23 @@ export class StudioService {
         return announcements
     }
 
-    async postStudioAnnouncement(id: number, userId: number, toCreate: PostAnnouncement){
-        const stud = await this.studioRepository.findOne({
-            where: {id: id},
-            relations: ['admin']
+    async postStudioAnnouncement(userId: number, toCreate: PostAnnouncement){
+        const usr = await this.userRepository.findOne({
+            where: {id: userId},
+            relations: ['studio']
         })
-        if(!stud) throw new NotFoundException
-        const isAdmin = stud.admin.id === userId
-        if(!isAdmin) throw new ForbiddenException
+        if(!usr || !usr.studio) throw new NotFoundException
 
-        const newAnnouncement: Partial<Announcement> = { ...toCreate, studio: stud };
+        const newAnnouncement: Partial<Announcement> = { ...toCreate, studio: usr.studio };
         try{
-            const toSave = this.announcementRepository.create(newAnnouncement);
-            const na = await this.announcementRepository.save(toSave);
+            const toSave = this.announcementRepository.create(newAnnouncement)
+            const na = await this.announcementRepository.save(toSave)
+            const { id, title, contents, created } = na
             return <GetAnnouncement>{
-                id: na.id,
-                title: na.title,
-                contents: na.contents,
-                created: na.created
+                id,
+                title,
+                contents,
+                created
             }   
         }catch(err){
             throw new InternalServerErrorException(err)
