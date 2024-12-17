@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger"
+import { Expose } from "class-transformer"
 import { IsString, Length } from "class-validator"
 
 class PostAnnouncement{
@@ -19,4 +20,18 @@ class PostAnnouncement{
     contents: string
 }
 
-export { PostAnnouncement }
+class GetAnnouncement{
+    @Expose()
+    id: number
+
+    @Expose()
+    title: string
+
+    @Expose()
+    contents: string
+
+    @Expose()
+    created: Date
+}
+
+export { PostAnnouncement, GetAnnouncement }
