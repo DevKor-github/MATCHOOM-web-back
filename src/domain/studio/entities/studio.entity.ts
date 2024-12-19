@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Announcement } from "./announcement.entity";
 import { Lecture } from "src/domain/lecture/entities/lecture.entity";
 import { User } from "src/domain/user/entities/user.entity";
@@ -26,12 +26,16 @@ export class Studio{
     @Column()
     policy: string
 
-    @ManyToOne(()=> User, (user)=> user.studio)
-    admin: User[]
+    @OneToOne(() => User, user => user.studio)
+    admin: User
     
     @OneToMany(()=> Media, (media) => media.studio)
     medias: Media[]
-
+  
+    @OneToOne(()=> Media, {nullable: true})
+    @JoinColumn()
+    thumbnail: Media
+  
     @OneToMany(() => Ticket, (ticket) => ticket.studio, { nullable: true })
     tickets: Ticket[];
 

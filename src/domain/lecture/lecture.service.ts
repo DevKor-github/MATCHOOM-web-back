@@ -4,7 +4,8 @@ import { Lecture } from './entities/lecture.entity';
 import { Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import { CreateLectureDto, DeleteLectureDto, GetLectureDto, LectureApplyDto } from './dtos/lecture.dto';
-import { Studio } from '../studio/entities/studio.entity';
+import { Media } from 'src/application/media/entities/media.entity';
+import { Point } from '../point/entities/point.entity';
 
 @Injectable()
 export class LectureService {
@@ -13,16 +14,19 @@ export class LectureService {
         private lectureRepository: Repository<Lecture>,
         @InjectRepository(User)
         private userRepository: Repository<User>,
-        @InjectRepository(Studio)
-        private studioRepository: Repository<Studio>
+        @InjectRepository(Media)
+        private mediaRepository: Repository<Media>,
+        @InjectRepository(Point)
+        private pointRepository: Repository<Point>
     ){}
 
     async createLecture(createLectureDto: CreateLectureDto, userId: number){
         const usr = await this.userRepository.findOne({
-            where: {id: userId}, 
+            where: { id: userId },
             relations: ['studio', 'studio.medias']
         })
-        if(!usr.studio) throw new ForbiddenException
+        if(!usr) throw new NotFoundException("유저 X")
+        if(!usr.studio) throw new ForbiddenException("스튜디오 관계 존재 X")
 
         const {startDiff, startTime, endDiff, endTime} = createLectureDto.applyTime
         const [startH, startM] = startTime.split(':').map(Number)
@@ -37,32 +41,49 @@ export class LectureService {
         applyEnd.setDate(applyEnd.getDate() - endDiff)
         applyEnd.setHours(endH, endM, 0, 0)
 
-        const toCreate: Partial<Lecture> = {
-            applyStart, applyEnd
-        }
-        
-        toCreate['applyStart'], toCreate['applyEnd'] = applyStart, applyEnd
-        
-        if(createLectureDto.fileId){
-            const mediaOwn = usr.studio.medias.find((m) => m.id === createLectureDto.fileId)
-            if(!mediaOwn) throw new ForbiddenException("잘못된 fileId")
+
+        const { name, instructor, maxCapacity, minCapacity, room, price, 
+            difficulty, type, genre, description, musicLink, lectureTime } = createLectureDto
+
+        const toCreate = {
+            name, instructor, applyStart, applyEnd, maxCapacity, minCapacity, 
+            room, price, difficulty, type, genre, description, musicLink, lectureTime,
+            studio: usr.studio,
         }
 
-        for(const key in createLectureDto){
-            if (
-                key !== 'applyTime' &&
-                createLectureDto[key] !== undefined && 
-                createLectureDto[key] !== null
-            ){ 
-                toCreate[key] = createLectureDto[key]
+        if (createLectureDto.fileId && usr.studio.medias) {
+            const mediaOwn = usr.studio.medias.find((m) => m.id === createLectureDto.fileId)
+            if (!mediaOwn) {
+                throw new ForbiddenException("잘못된 fileId")
             }
+            
+            const media = await this.mediaRepository.findOne({
+                where: {id: createLectureDto.fileId}
+            })
+            if (!media) {
+                throw new NotFoundException("해당하는 파일을 찾을 수 없습니다.")
+            }
+            
+            toCreate['file'] = media
         }
-        
-        toCreate['studio'] = usr.studio
-        const newLecture = this.lectureRepository.create(toCreate)
-        const res = await this.lectureRepository.save(newLecture)
-        
-        return res
+
+        try {
+            await this.lectureRepository.save(toCreate)
+            
+            const updatedStudio = await this.userRepository.findOne({
+                where: { id: userId },
+                relations: ['studio', 'studio.lectures', 'studio.thumbnail']
+            })
+            
+            return {
+                studioName: updatedStudio?.studio.name,
+                thumbnail: updatedStudio?.studio.thumbnail?.filename || null,
+                lectures: updatedStudio?.studio.lectures
+            }
+        } catch (error) {
+            console.error('강의 생성 중 오류 발생:', error)
+            throw new Error('강의 생성에 실패했습니다.')
+        }
     }
 
     async deleteLecture(deleteLectureDto: DeleteLectureDto, userId: number){
@@ -73,24 +94,33 @@ export class LectureService {
         })
         if(!lec) throw new NotFoundException
 
-        const isOwner = lec.studio.admin.some(e => e.id === userId)
+        const isOwner = lec.studio.admin.id === userId
         if(!isOwner) throw new ForbiddenException
 
-        else this.lectureRepository.delete(lectureId)
-
-        return {message: `Deleted Lecture successfully`}
+        const now = new Date()
+        if (lec.applyStart <= now && now <= lec.applyEnd) {
+            throw new ForbiddenException("신청기간 중에는 강의를 삭제할 수 없습니다.")
+        }
+        
+        try {
+            await this.lectureRepository.delete(lectureId);
+            return { message: `강의가 성공적으로 삭제되었습니다.` };
+        } catch (error) {
+            console.error('강의 삭제 중 오류 발생:', error);
+            throw new Error('강의 삭제에 실패했습니다.');
+        }
     }
 
     async getLectureInfo(lectureId: number){
         const lec = await this.lectureRepository.findOne({
             where: {id: lectureId},
-            relations: ['studio.name', 'studio.id']
+            relations: ['studio', 'file']
         })
         if(!lec) throw new NotFoundException(`ID ${lectureId}에 해당하는 강의는 없습니다.`)
         const res: GetLectureDto = {
             lectureId: lec.id,
             thumbnail: lec.file
-                ? `${process.env.CLOUDFRONT_URL}/$${lec.studio.id}/${lec.file.filename}`
+                ? `${process.env.AWS_S3_CLOUDFRONT_DOMAIN}/images/${lec.studio.id}/${lec.file.filename}`
                 : `default`,
             studioName: lec.studio?.name ?? null,
             instructor: lec.instructor,
@@ -103,9 +133,37 @@ export class LectureService {
         const {lectureId} = lectureApplyDto
         const lec = await this.lectureRepository.findOne({
             where:{id: lectureId}, 
-            relations: ['student']
+            relations: ['student', 'studio']
         })
         if(!lec) throw new NotFoundException("강의를 찾을 수 없습니다.")
+
+        const stud = await this.userRepository.findOne({
+            where: {id: userId},
+            relations: ['points']
+        })
+        const totalAvailablePoints = stud.points
+        .filter(p => p.expiration > new Date() && p.studio.id === lec.studio.id)
+        .reduce((sum, p) => sum + p.point, 0)
+
+        if(totalAvailablePoints < lec.price) throw new ForbiddenException("포인트가 부족합니다.")
+
+        const sortedPoints = stud.points
+        .filter(p => p.expiration > new Date() && p.studio.id === lec.studio.id)
+        .sort((a, b) => a.expiration.getTime() - b.expiration.getTime())
+
+        let remainingPrice = lec.price
+        for (const point of sortedPoints){
+            if(remainingPrice <= 0) break
+            if(point.point > remainingPrice){
+                point.point -= remainingPrice
+                await this.pointRepository.save(point)
+                remainingPrice = 0
+            } else {
+                remainingPrice -= point.point
+                await this.pointRepository.delete(point.id)
+            }
+        }
+
         const registerations = lec.student.length
         
         const usr = await this.userRepository.findOne({
@@ -130,7 +188,8 @@ export class LectureService {
         await this.userRepository.save(usr)
 
         return {
-            message: `등록 성공 ${lec.student.length}/${lec.maxCapacity ?? '무제한'}`
+            message: "등록성공",
+            result: `${lec.student.length}/${lec.maxCapacity ?? '무제한'}`
         }
     }
 }

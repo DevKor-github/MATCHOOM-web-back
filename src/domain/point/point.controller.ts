@@ -32,6 +32,7 @@ export class PointController {
 
   @Post('purchase')
   @UseGuards(AuthGuard('jwt-access'))
+  @Docs('purchase')
   async chargePoint(@Param('studioId') studioId: number, @Body() purchasePointReqDto: PurchasePointReqDto, @User() user: UserPayload) {
     const userId = user.id;
     const ticketId = purchasePointReqDto.ticketId;

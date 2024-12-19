@@ -17,12 +17,13 @@ export class TicketController {
   async getAllTickets(@Param('studioId') studioId: number) {
     return await this.ticketService.getAllTickets(studioId);
   }
-
+/*
   @Get(':ticketId')
   @Docs('getTicketInfo')
   async getTicketInfo(@Param('studioId') studioId: number, @Param('ticketId') ticketId: number) {
     return await this.ticketService.getTicketInfo(studioId, ticketId);
   }
+*/
 }
 
 @Controller(':studioId/ticket')

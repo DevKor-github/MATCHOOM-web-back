@@ -5,6 +5,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { User } from "src/common/decorators/user.decorator";
 import { AuthGuard } from "@nestjs/passport";
 import { UploadFileReqDto } from "./dtos/uploadFile.dto";
+import { Docs } from "./docs/decorators/media.decorator";
 
 @Controller('media')
 @ApiTags('media')
@@ -23,6 +24,7 @@ export class MediaController {
       else callback(new BadRequestException('허용되지 않은 확장자입니다'), false)
     }
   }))
+  @Docs('upload')
   async uploadFile(
     @User() user,
     @Body('studioId', ParseIntPipe) studioId: number,
@@ -32,7 +34,9 @@ export class MediaController {
   }
 
   @Get(':studioId')
-  async getFiles(@Param('studioId') studId: number) {
-    return await this.mediaService.getFiles(studId)
+  @UseGuards(AuthGuard('jwt-access'))
+  @Docs('getFiles')
+  async getFiles(@Param('studioId') studioId: number) {
+    return await this.mediaService.getFiles(studioId);
   }
 }
