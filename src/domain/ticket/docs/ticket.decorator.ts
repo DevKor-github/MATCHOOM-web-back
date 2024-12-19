@@ -1,5 +1,5 @@
 import { applyDecorators } from "@nestjs/common";
-import { ApiBody, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiParam, ApiQuery } from "@nestjs/swagger";
+import { ApiBody, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiParam } from "@nestjs/swagger";
 import { GetTicketResDto } from "../dtos/getTicket.dto";
 import { CreateTicketReqDto } from "../dtos/createTicket.dto";
 import { UpdateTicketReqDto } from "../dtos/updateTicket.dto";
@@ -18,10 +18,9 @@ export function Docs(endPoint: EndPoints) {
         description: "구매권 목록 조회. [{id, 이름, 가격}] 반환",
         summary: "구매권 목록 조회"
       }),
-      ApiQuery({
+      ApiParam({
         name: "studioId",
-        type: Number,
-        description: "스튜디오 고유 id"
+        description: "스튜디오 id"
       }),
       ApiOkResponse({
         type: [GetTicketResDto],

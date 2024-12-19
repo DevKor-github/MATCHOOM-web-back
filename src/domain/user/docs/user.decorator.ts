@@ -1,5 +1,5 @@
 import { applyDecorators } from "@nestjs/common"
-import { ApiBearerAuth, ApiBody, ApiConflictResponse, ApiHeader, ApiNotFoundResponse, ApiOkResponse, ApiOperation } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiBody, ApiConflictResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 import { UpdateUserReqDto } from "../dtos/updateUser.dto";
 import { GetUserResDto } from "../dtos/getUser.dto";
 

@@ -7,7 +7,10 @@ class GetTicketResDto {
   @ApiProperty({ example: "구매권 이름" })
   name: string;
 
-  @ApiProperty({ example: "" })
+  @ApiProperty({ example: 30000 })
+  point: number;
+
+  @ApiProperty({ example: 40000 })
   price: number;
 }
 
