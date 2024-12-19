@@ -4,8 +4,8 @@ import { Lecture } from './entities/lecture.entity';
 import { Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import { CreateLectureDto, DeleteLectureDto, GetLectureDto, LectureApplyDto } from './dtos/lecture.dto';
-import { Studio } from '../studio/entities/studio.entity';
 import { Media } from 'src/application/media/entities/media.entity';
+import { Point } from '../point/entities/point.entity';
 
 @Injectable()
 export class LectureService {
@@ -15,7 +15,9 @@ export class LectureService {
         @InjectRepository(User)
         private userRepository: Repository<User>,
         @InjectRepository(Media)
-        private mediaRepository: Repository<Media>
+        private mediaRepository: Repository<Media>,
+        @InjectRepository(Point)
+        private pointRepository: Repository<Point>
     ){}
 
     async createLecture(createLectureDto: CreateLectureDto, userId: number){
@@ -134,6 +136,36 @@ export class LectureService {
             relations: ['student']
         })
         if(!lec) throw new NotFoundException("강의를 찾을 수 없습니다.")
+
+        const stud = await this.userRepository.findOne({
+            where: {id: userId},
+            relations: ['points']
+        })
+        const totalAvailablePoints = stud.points
+        .filter(p => p.expiration > new Date())
+        .reduce((sum, p) => sum + p.point, 0)
+
+        if(totalAvailablePoints < lec.price) throw new ForbiddenException("포인트가 부족합니다.")
+
+        const sortedPoints = stud.points
+        .filter(p => p.expiration > new Date())
+        .sort((a, b) => a.expiration.getTime() - b.expiration.getTime())
+
+        let remainingPrice = lec.price
+        for (const point of sortedPoints){
+            if(remainingPrice <= 0) break
+            if(point.point > remainingPrice){
+                point.point -= remainingPrice
+                await this.pointRepository.save(point)
+                remainingPrice = 0
+            } else {
+                remainingPrice -= point.point
+                await this.pointRepository.delete(point.id)
+            }
+        }
+        if(remainingPrice > 0) throw new ForbiddenException("포인트가 부족합니다.")
+        //동시성 테스트
+
         const registerations = lec.student.length
         
         const usr = await this.userRepository.findOne({
@@ -158,7 +190,8 @@ export class LectureService {
         await this.userRepository.save(usr)
 
         return {
-            message: `등록 성공 ${lec.student.length}/${lec.maxCapacity ?? '무제한'}`
+            message: "등록성공",
+            result: `${lec.student.length}/${lec.maxCapacity ?? '무제한'}`
         }
     }
 }
