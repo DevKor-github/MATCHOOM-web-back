@@ -133,7 +133,7 @@ export class LectureService {
         const {lectureId} = lectureApplyDto
         const lec = await this.lectureRepository.findOne({
             where:{id: lectureId}, 
-            relations: ['student']
+            relations: ['student', 'studio']
         })
         if(!lec) throw new NotFoundException("강의를 찾을 수 없습니다.")
 
@@ -142,13 +142,13 @@ export class LectureService {
             relations: ['points']
         })
         const totalAvailablePoints = stud.points
-        .filter(p => p.expiration > new Date())
+        .filter(p => p.expiration > new Date() && p.studio.id === lec.studio.id)
         .reduce((sum, p) => sum + p.point, 0)
 
         if(totalAvailablePoints < lec.price) throw new ForbiddenException("포인트가 부족합니다.")
 
         const sortedPoints = stud.points
-        .filter(p => p.expiration > new Date())
+        .filter(p => p.expiration > new Date() && p.studio.id === lec.studio.id)
         .sort((a, b) => a.expiration.getTime() - b.expiration.getTime())
 
         let remainingPrice = lec.price
@@ -163,8 +163,6 @@ export class LectureService {
                 await this.pointRepository.delete(point.id)
             }
         }
-        if(remainingPrice > 0) throw new ForbiddenException("포인트가 부족합니다.")
-        //동시성 테스트
 
         const registerations = lec.student.length
         
