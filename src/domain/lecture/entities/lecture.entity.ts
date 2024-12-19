@@ -17,7 +17,7 @@ export class Lecture{
     @Column({nullable: true})
     type: string
 
-    @Column({type: 'json'})
+    @Column({type: 'json', nullable: true})
     lectureTime: {start: Date, end: Date}[]
 
     @Column()
@@ -57,6 +57,6 @@ export class Lecture{
     @JoinTable()
     student: User[]
 
-    @OneToMany(() => Media, (media) => media.lectures)
+    @ManyToOne(() => Media, (media) => media.lectures)
     file: Media
 }

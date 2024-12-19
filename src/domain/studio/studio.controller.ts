@@ -5,6 +5,7 @@ import { User } from 'src/common/decorators/user.decorator';
 import { PostAnnouncement } from './dtos/announcement.dto';
 import { UserPayload } from 'src/common/interfaces/user.interface';
 import { AuthGuard } from '@nestjs/passport';
+import { Docs } from './docs/decorators/studio.decorator';
 
 @Controller('studio')
 @ApiTags('studio')
@@ -14,35 +15,39 @@ export class StudioController {
     ){}
 
     @Get(':id/info')
+    @Docs('getStudioInfo')
     async getStudioInfo(@Param('id') id: number){
         return this.studioService.getStudioInfo(id)
     }
 
     @Get(':id/announcement')
+    @Docs('getStudioAnnouncement')
     async getStudioAnnouncement(@Param('id') id: number){
         return this.studioService.getStudioAnnouncement(id)
     }
 
-    @Post(':id/announcement')
+    @Post('announcement')
     @UseGuards(AuthGuard('jwt-access'))
+    @Docs('postStudioAnnouncement')
     async postStudioAnnouncement(
-        @Param('id') id: number,
-        @Body() postAnnouncment: PostAnnouncement,
+        @Body() postAnnouncement: PostAnnouncement,
         @User() user: UserPayload
     ){
-        return this.studioService.postStudioAnnouncement(id, user.id, postAnnouncment)
+        return this.studioService.postStudioAnnouncement(user.id, postAnnouncement)
     }
 
     @Delete('announcement')
     @UseGuards(AuthGuard('jwt-access'))
+    @Docs('deleteStudioAnnouncement')
     async deleteStudioAnnouncement(
-        @Query('id') id: number,
+        @Body('id') id: number,
         @User() user: UserPayload
     ){
         return this.studioService.deleteAnnouncement(id, user.id)
     }
 
     @Get(':id/search')
+    @Docs('getStudioSearchResult')
     async getSearchResult(
         @Param('id') id: number,
         @Query('keyword') keyword?: string,

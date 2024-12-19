@@ -20,7 +20,7 @@ export class LectureService {
 
     async createLecture(createLectureDto: CreateLectureDto, userId: number){
         const usr = await this.userRepository.findOne({
-            where: {id: userId}, 
+            where: { id: userId },
             relations: ['studio', 'studio.medias']
         })
         if(!usr) throw new NotFoundException("유저 X")
@@ -40,33 +40,48 @@ export class LectureService {
         applyEnd.setHours(endH, endM, 0, 0)
 
 
-        const { name, instructor, maxCapacity, minCapacity, room, price, difficulty, type, genre, description, musicLink } = createLectureDto
+        const { name, instructor, maxCapacity, minCapacity, room, price, 
+            difficulty, type, genre, description, musicLink, lectureTime } = createLectureDto
 
-        const toCreate: Partial<Lecture> = {
-            name, instructor, applyStart, applyEnd, maxCapacity, minCapacity, room, price, difficulty, type, genre, description, musicLink,
+        const toCreate = {
+            name, instructor, applyStart, applyEnd, maxCapacity, minCapacity, 
+            room, price, difficulty, type, genre, description, musicLink, lectureTime,
             studio: usr.studio,
         }
 
-        console.log(toCreate)
-
-        if((createLectureDto.fileId === null ||  createLectureDto.fileId === undefined) && usr.studio.medias){
+        if (createLectureDto.fileId && usr.studio.medias) {
             const mediaOwn = usr.studio.medias.find((m) => m.id === createLectureDto.fileId)
-            console.log(mediaOwn)
-            if(!mediaOwn) throw new ForbiddenException("잘못된 fileId")
+            if (!mediaOwn) {
+                throw new ForbiddenException("잘못된 fileId")
+            }
+            
             const media = await this.mediaRepository.findOne({
                 where: {id: createLectureDto.fileId}
             })
-            console.log(media)
-            if(!media) throw new NotFoundException("해당하는 파일을 찾을 수 없습니다.")
+            if (!media) {
+                throw new NotFoundException("해당하는 파일을 찾을 수 없습니다.")
+            }
+            
             toCreate['file'] = media
-            console.log(toCreate)
         }
-        console.log(toCreate)
 
-        const newLecture = this.lectureRepository.create(toCreate)
-        const res = await this.lectureRepository.save(newLecture)
-        
-        return res
+        try {
+            await this.lectureRepository.save(toCreate)
+            
+            const updatedStudio = await this.userRepository.findOne({
+                where: { id: userId },
+                relations: ['studio', 'studio.lectures', 'studio.thumbnail']
+            })
+            
+            return {
+                studioName: updatedStudio?.studio.name,
+                thumbnail: updatedStudio?.studio.thumbnail?.filename || null,
+                lectures: updatedStudio?.studio.lectures
+            }
+        } catch (error) {
+            console.error('강의 생성 중 오류 발생:', error)
+            throw new Error('강의 생성에 실패했습니다.')
+        }
     }
 
     async deleteLecture(deleteLectureDto: DeleteLectureDto, userId: number){
@@ -77,12 +92,21 @@ export class LectureService {
         })
         if(!lec) throw new NotFoundException
 
-        const isOwner = lec.studio.admin.some(e => e.id === userId)
+        const isOwner = lec.studio.admin.id === userId
         if(!isOwner) throw new ForbiddenException
 
-        else this.lectureRepository.delete(lectureId)
-
-        return {message: `Deleted Lecture successfully`}
+        const now = new Date()
+        if (lec.applyStart <= now && now <= lec.applyEnd) {
+            throw new ForbiddenException("신청기간 중에는 강의를 삭제할 수 없습니다.")
+        }
+        
+        try {
+            await this.lectureRepository.delete(lectureId);
+            return { message: `강의가 성공적으로 삭제되었습니다.` };
+        } catch (error) {
+            console.error('강의 삭제 중 오류 발생:', error);
+            throw new Error('강의 삭제에 실패했습니다.');
+        }
     }
 
     async getLectureInfo(lectureId: number){
