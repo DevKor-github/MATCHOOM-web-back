@@ -5,7 +5,7 @@ import { CreateTicketReqDto } from './dtos/createTicket.dto';
 import { UpdateTicketReqDto } from './dtos/updateTicket.dto';
 import { Docs } from './docs/ticket.decorator';
 
-@Controller('ticket')
+@Controller(':studioId/ticket')
 @ApiTags('ticket')
 export class TicketController {
   constructor(
@@ -14,7 +14,7 @@ export class TicketController {
 
   @Get()
   @Docs('getAllTickets')
-  async getAllTickets(@Query('studioId') studioId: number) {
+  async getAllTickets(@Param('studioId') studioId: number) {
     return await this.ticketService.getAllTickets(studioId);
   }
 
