@@ -28,7 +28,8 @@ export class StudioService {
         const lectures: GetLectureDto[] = stud.lectures.map((e) => ({
             lectureId: e.id,
             thumbnail: e.file ? 
-            `${process.env.CLOUDFRONT_URL}/$${id}/${e.file.filename}`:null,
+            `${process.env.AWS_S3_CLOUDFRONT_DOMAIN}/images/${id}/${e.file.filename}`:null,
+            lectureTime: e.lectureTime,
             studioName: stud.name,
             instructor: e.instructor,
             description: e.description
