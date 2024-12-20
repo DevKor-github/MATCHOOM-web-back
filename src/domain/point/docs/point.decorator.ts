@@ -15,7 +15,7 @@ export function Docs(endPoint: EndPoints) {
         summary: "본인 포인트 조회"
       }),
       ApiBearerAuth(),
-      ApiQuery({
+      ApiParam({
         name: "studioId",
         description: "스튜디오 id"
       }),
@@ -34,6 +34,10 @@ export function Docs(endPoint: EndPoints) {
       ApiBearerAuth(),
       ApiCreatedResponse({
         description: "포인트 구매 성공"
+      }),
+      ApiParam({
+        name: "studioId",
+        description: "스튜디오 id"
       }),
       ApiBody({
         type: PurchasePointReqDto
