@@ -137,7 +137,15 @@ class GetLectureDto{
         example: "thumbnail.jpg",
         description: "강의의 썸네일 이미지 URL입니다."
     })
-    thumbnail: string;
+    thumbnail: string | null;
+
+    @Expose()
+    @ApiProperty({
+        type: [LectureTimeDto],
+        description: "강의가 진행될 시간 정보 목록입니다."
+    })
+    @Type(() => LectureTimeDto)
+    lectureTime: LectureTimeDto[];
 
     @Expose()
     @ApiProperty({
