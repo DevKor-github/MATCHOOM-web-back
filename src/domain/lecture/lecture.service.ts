@@ -120,8 +120,8 @@ export class LectureService {
         const res: GetLectureDto = {
             lectureId: lec.id,
             thumbnail: lec.file
-                ? `${process.env.AWS_S3_CLOUDFRONT_DOMAIN}/images/${lec.studio.id}/${lec.file.filename}`
-                : `default`,
+                ? `${process.env.AWS_S3_CLOUDFRONT_DOMAIN}/images/${lec.studio.id}/${lec.file.filename}`: null,
+            lectureTime: lec.lectureTime,
             studioName: lec.studio?.name ?? null,
             instructor: lec.instructor,
             description: lec.description
@@ -160,7 +160,8 @@ export class LectureService {
                 remainingPrice = 0
             } else {
                 remainingPrice -= point.point
-                await this.pointRepository.delete(point.id)
+                point.expiration = new Date()
+                await this.pointRepository.save(point)
             }
         }
 
