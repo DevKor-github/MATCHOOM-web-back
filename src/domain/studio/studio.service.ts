@@ -39,6 +39,9 @@ export class StudioService {
             name: stud.name,
             description: stud.description,
             policy: stud.policy,
+            bank: stud.bank,
+            account: stud.account,
+            accountHolder: stud.accountHolder,
             thumbnail: stud.thumbnail ? 
             `${process.env.CLOUDFRONT_URL}/$${id}/${stud.thumbnail.filename}`:null,
             lectures
