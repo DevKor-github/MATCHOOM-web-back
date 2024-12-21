@@ -40,7 +40,7 @@ export class StudioService {
             description: stud.description,
             policy: stud.policy,
             thumbnail: stud.thumbnail ? 
-            `${process.env.CLOUDFRONT_URL}/$${id}/${stud.thumbnail.filename}`:null,
+            `${process.env.AWS_S3_CLOUDFRONT_DOMAIN}/images/${id}/${stud.thumbnail.filename}`:null,
             lectures
         }
     }
