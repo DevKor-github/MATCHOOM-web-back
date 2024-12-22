@@ -26,6 +26,15 @@ export class Studio{
     @Column()
     policy: string
 
+    @Column({ type: "varchar", length: 10, nullable: true })
+    bank: string
+
+    @Column({ type: "varchar", nullable: true, length: 14 })
+    account: string
+
+    @Column({ nullable: true })
+    accountHolder: string
+
     @OneToOne(() => User, user => user.studio)
     admin: User
     
