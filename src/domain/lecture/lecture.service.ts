@@ -117,14 +117,25 @@ export class LectureService {
             relations: ['studio', 'file']
         })
         if(!lec) throw new NotFoundException(`ID ${lectureId}에 해당하는 강의는 없습니다.`)
-        const res: GetLectureDto = {
+        const res = {
             lectureId: lec.id,
             thumbnail: lec.file
                 ? `${process.env.AWS_S3_CLOUDFRONT_DOMAIN}/images/${lec.studio.id}/${lec.file.filename}`: null,
             lectureTime: lec.lectureTime,
             studioName: lec.studio?.name ?? null,
             instructor: lec.instructor,
-            description: lec.description
+            description: lec.description,
+            maxCapacity: lec.maxCapacity,
+            minCapacity: lec.minCapacity,
+            room: lec.room,
+            price: lec.price,
+            applyStart: lec.applyStart,
+            applyEnd: lec.applyEnd,
+            difficulty: lec.difficulty,
+            genre: lec.genre,
+            musicLink: lec.musicLink,
+            registerations: lec.student ? lec.student.length : 0,
+            type: lec.type
         }
         return res
     }
@@ -141,11 +152,13 @@ export class LectureService {
             where: {id: userId},
             relations: ['points']
         })
+        if(!stud.points) stud.points = []
+
         const totalAvailablePoints = stud.points
         .filter(p => p.expiration > new Date() && p.studio.id === lec.studio.id)
         .reduce((sum, p) => sum + p.point, 0)
 
-        if(totalAvailablePoints < lec.price) throw new ForbiddenException("포인트가 부족합니다.")
+        if(totalAvailablePoints < lec.price && lec.price > 0) throw new ForbiddenException("포인트가 부족합니다.")
 
         const sortedPoints = stud.points
         .filter(p => p.expiration > new Date() && p.studio.id === lec.studio.id)
@@ -164,6 +177,8 @@ export class LectureService {
                 await this.pointRepository.save(point)
             }
         }
+
+        if(remainingPrice > 0) throw new ForbiddenException("포인트가 부족합니다.")
 
         const registerations = lec.student.length
         
