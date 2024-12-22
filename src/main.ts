@@ -11,7 +11,7 @@ async function bootstrap() {
 
   // CORS 설정
   app.enableCors({
-    origin: ['http://localhost:3000', 'https://matchoom-web-front.vercel.app/', 'https://matchoom-web-front.vercel.app'],
+    origin: ['http://localhost:3000', 'https://matchoom-web-front.vercel.app/', 'https://matchoom-web-front.vercel.app', 'https://matchoom.netlify.app/', 'https://matchoom.netlify.app'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true
   });
