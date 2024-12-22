@@ -111,33 +111,32 @@ export class LectureService {
         }
     }
 
-    async getLectureInfo(lectureId: number){
+    async getLectureInfo(lectureId: number) {
         const lec = await this.lectureRepository.findOne({
-            where: {id: lectureId},
+            where: { id: lectureId },
             relations: ['studio', 'file']
-        })
-        if(!lec) throw new NotFoundException(`ID ${lectureId}에 해당하는 강의는 없습니다.`)
-        const res = {
-            lectureId: lec.id,
-            thumbnail: lec.file
-                ? `${process.env.AWS_S3_CLOUDFRONT_DOMAIN}/images/${lec.studio.id}/${lec.file.filename}`: null,
-            lectureTime: lec.lectureTime,
-            studioName: lec.studio?.name ?? null,
-            instructor: lec.instructor,
-            description: lec.description,
-            maxCapacity: lec.maxCapacity,
-            minCapacity: lec.minCapacity,
-            room: lec.room,
-            price: lec.price,
-            applyStart: lec.applyStart,
-            applyEnd: lec.applyEnd,
-            difficulty: lec.difficulty,
-            genre: lec.genre,
-            musicLink: lec.musicLink,
-            registerations: lec.student ? lec.student.length : 0,
-            type: lec.type
+        });
+
+        if (!lec) {
+            throw new NotFoundException(`ID ${lectureId}에 해당하는 강의는 없습니다.`);
         }
-        return res
+
+        const {
+            lectureTime, studio, file, instructor, description, maxCapacity, minCapacity, room,
+            price, applyStart, applyEnd, difficulty, genre, musicLink, student, type
+        } = lec;
+
+        const thumbnail = file
+            ? `${process.env.AWS_S3_CLOUDFRONT_DOMAIN}/images/${studio.id}/${file.filename}`
+            : null;
+
+        return {
+            lectureId, thumbnail, lectureTime,
+            studioName: studio.name ? studio.name : null,
+            instructor, description, maxCapacity, minCapacity, room, price,
+            applyStart, applyEnd, difficulty, genre, musicLink, type,
+            registerations: student ? student.length : 0,
+        }
     }
 
     async applyLecture(lectureApplyDto: LectureApplyDto, userId: number){
