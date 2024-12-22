@@ -141,6 +141,8 @@ export class LectureService {
             where: {id: userId},
             relations: ['points']
         })
+        if(!stud.points) throw new ForbiddenException("포인트가 부족합니다.")
+            
         const totalAvailablePoints = stud.points
         .filter(p => p.expiration > new Date() && p.studio.id === lec.studio.id)
         .reduce((sum, p) => sum + p.point, 0)
