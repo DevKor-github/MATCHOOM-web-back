@@ -39,11 +39,9 @@ export class StudioService {
             name: stud.name,
             description: stud.description,
             policy: stud.policy,
-            bank: stud.bank,
-            account: stud.account,
-            accountHolder: stud.accountHolder,
+            accountInfo: `(${stud.bank}) ${stud.account} (${stud.accountHolder})`,
             thumbnail: stud.thumbnail ? 
-            `${process.env.AWS_S3_CLOUDFRONT_DOMAIN}/images/${id}/${stud.thumbnail.filename}`:null,
+            `${process.env.CLOUDFRONT_URL}/$${id}/${stud.thumbnail.filename}`:null,
             lectures
         }
     }
