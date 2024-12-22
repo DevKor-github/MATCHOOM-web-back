@@ -141,13 +141,13 @@ export class LectureService {
             where: {id: userId},
             relations: ['points']
         })
-        if(!stud.points) throw new ForbiddenException("포인트가 부족합니다.")
-            
+        if(!stud.points) stud.points = []
+
         const totalAvailablePoints = stud.points
         .filter(p => p.expiration > new Date() && p.studio.id === lec.studio.id)
         .reduce((sum, p) => sum + p.point, 0)
 
-        if(totalAvailablePoints < lec.price) throw new ForbiddenException("포인트가 부족합니다.")
+        if(totalAvailablePoints < lec.price && lec.price > 0) throw new ForbiddenException("포인트가 부족합니다.")
 
         const sortedPoints = stud.points
         .filter(p => p.expiration > new Date() && p.studio.id === lec.studio.id)
@@ -166,6 +166,8 @@ export class LectureService {
                 await this.pointRepository.save(point)
             }
         }
+
+        if(remainingPrice > 0) throw new ForbiddenException("포인트가 부족합니다.")
 
         const registerations = lec.student.length
         
