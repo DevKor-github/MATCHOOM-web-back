@@ -134,7 +134,7 @@ export class LectureService {
             difficulty: lec.difficulty,
             genre: lec.genre,
             musicLink: lec.musicLink,
-            registerations: lec.student.length,
+            registerations: lec.student ? lec.student.length : 0,
             type: lec.type
         }
         return res
