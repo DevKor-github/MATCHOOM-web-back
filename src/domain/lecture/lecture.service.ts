@@ -6,6 +6,7 @@ import { User } from '../user/entities/user.entity';
 import { CreateLectureDto, DeleteLectureDto, GetLectureDto, LectureApplyDto } from './dtos/lecture.dto';
 import { Media } from 'src/application/media/entities/media.entity';
 import { Point } from '../point/entities/point.entity';
+import { PointTransactionService } from '../point-transaction/point-transaction.service';
 
 @Injectable()
 export class LectureService {
@@ -17,7 +18,8 @@ export class LectureService {
         @InjectRepository(Media)
         private mediaRepository: Repository<Media>,
         @InjectRepository(Point)
-        private pointRepository: Repository<Point>
+        private pointRepository: Repository<Point>,
+        private pointTransactionService: PointTransactionService
     ){}
 
     async createLecture(createLectureDto: CreateLectureDto, userId: number){
@@ -202,6 +204,8 @@ export class LectureService {
 
         usr.lectures.push(lec)
         await this.userRepository.save(usr)
+
+        await this.pointTransactionService.createTransaction(usr, lec.studio, "purchase", undefined, lec);
 
         return {
             message: "등록성공",

@@ -208,6 +208,7 @@ export class PointTransactionService {
         transaction = this.pointTransactionRepository.create({
           amount: ticket.point,
           user: user,
+          type: "charge",
           studio: studio,
           ticket: ticket
         });
@@ -216,6 +217,7 @@ export class PointTransactionService {
         transaction = this.pointTransactionRepository.create({
           amount: lecture.price,
           user: user,
+          type: "purchase",
           studio: studio,
           lecture: lecture
         });
