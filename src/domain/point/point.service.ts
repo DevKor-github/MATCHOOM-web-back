@@ -6,6 +6,7 @@ import { User } from '../user/entities/user.entity';
 import { Ticket } from '../ticket/entities/ticket.entity';
 import { Studio } from '../studio/entities/studio.entity';
 import { GetPointResDto } from './dtos/getPoint.dto';
+import { PointTransactionService } from '../point-transaction/point-transaction.service';
 
 @Injectable()
 export class PointService {
@@ -17,8 +18,8 @@ export class PointService {
     @InjectRepository(Ticket)
     private ticketRepository: Repository<Ticket>,
     @InjectRepository(Studio)
-    private studioRepository: Repository<Studio>
-    
+    private studioRepository: Repository<Studio>,
+    private pointTransactionService: PointTransactionService
   ) { }
 
   async getMyPoints(studioId: number, userId: number) {
@@ -79,7 +80,19 @@ export class PointService {
     });
 
     await this.pointRepository.save(point);
+    await this.pointTransactionService.createTransaction(user, studio, "charge", ticket);
 
     return { message: "포인트 충전 성공" };
+  }
+
+  async updatePoint(studio: Studio, user: User, amount: number) {
+    const point = this.pointRepository.create({
+      point: amount,
+      expiration: new Date(Date.now() + 24 * 60 * 60 * 1000 * studio.pointExpiration),
+      user: user,
+      studio: studio
+    });
+
+    await this.pointRepository.save(point);
   }
 }
