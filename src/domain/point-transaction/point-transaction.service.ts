@@ -10,6 +10,7 @@ import { Ticket } from '../ticket/entities/ticket.entity';
 import { UpdateRefundReqDto } from './dtos/updateRefund.dto';
 import { PointService } from '../point/point.service';
 import { GetHistoryResDto } from './dtos/getHistory.dto';
+import { Point } from '../point/entities/point.entity';
 
 @Injectable()
 export class PointTransactionService {
@@ -23,7 +24,9 @@ export class PointTransactionService {
     @InjectRepository(Studio)
     private studioRepository: Repository<Studio>,
     @InjectRepository(Lecture)
-    private lectuerRepository: Repository<Lecture>
+    private lectuerRepository: Repository<Lecture>,
+    @InjectRepository(Point)
+    private pointRepository: Repository<Point>
   ) { }
 
   async createRefund(studioId: number, lectureId: number, userId: number) {
@@ -62,16 +65,17 @@ export class PointTransactionService {
   async getSubmittedRefund(studioId: number, userId: number) {
     const refunds = await this.refundRepository.createQueryBuilder('refund')
       .leftJoinAndSelect('refund.lecture', 'lecture')
+      .leftJoinAndSelect('lecture.file', 'media')
       .select([
         'lecture.id',
         'lecture.name',
         'lecture.description',
-        `CONCAT('${process.env.AWS_S3_CLOUDFRONT_DOMAIN}/images/${studioId}/', lecture.file) as file`,
+        `CONCAT('${process.env.AWS_S3_CLOUDFRONT_DOMAIN}/images/${studioId}/', media.filename) as file`,
         'refund.status',
         'refund.created_at'
       ])
-      .where('refund.studioId = :studioId', { studioId })
-      .andWhere('refund.userId = :userId', { userId })
+      .where('refund.studio = :studioId', { studioId })
+      .andWhere('refund.user = :userId', { userId })
       .orderBy('refund.created_at', 'DESC')
       .getMany();
 
@@ -82,11 +86,12 @@ export class PointTransactionService {
     const type = "purchase"
     const transactions = await this.pointTransactionRepository.createQueryBuilder('point_transaction')
       .leftJoinAndSelect('point_transaction.lecture', 'lecture')
+      .leftJoinAndSelect('lecture.file', 'media')
       .select([
         'lecture.id',
         'lecture.name',
         'lecture.description',
-        `CONCAT('${process.env.AWS_S3_CLOUDFRONT_DOMAIN}/images/${studioId}/', lecture.file) as file`,
+        `CONCAT('${process.env.AWS_S3_CLOUDFRONT_DOMAIN}/images/${studioId}/', media.filename) as file`,
         'point_transaction.created_at',
         'point_transaction.id'
       ])
@@ -101,20 +106,20 @@ export class PointTransactionService {
 
   async getRefundForStudio(studioId: number) {
     const refunds = await this.refundRepository.createQueryBuilder('refund')
-    .leftJoinAndSelect('refund.lecture', 'lecture')
-    .leftJoinAndSelect('refund.user', 'user')
-    .select([
-      'lecture.name',
-      'refund.id',
-      'refund.status',
-      'refund.created_at',
-      'user.name',
-      'user.phone',
-      'user.account'
-    ])
-    .where('refund.studioId = :studioId', { studioId })
-    .orderBy('refund.created_at', 'DESC')
-    .getMany();
+      .leftJoinAndSelect('refund.lecture', 'lecture')
+      .leftJoinAndSelect('refund.user', 'user')
+      .select([
+        'lecture.name',
+        'refund.id',
+        'refund.status',
+        'refund.created_at',
+        'user.name',
+        'user.phone',
+        'user.account'
+      ])
+      .where('refund.studio = :studioId', { studioId })
+      .orderBy('refund.created_at', 'DESC')
+      .getMany();
 
     return refunds;
   }
@@ -133,9 +138,9 @@ export class PointTransactionService {
     if (user.studio.id !== refund.studio.id) throw new UnauthorizedException("해당 스튜디오의 관리자가 아닙니다.");
 
     refund.status = status || refund.status;
-    
-    // if (status === "approved") this.pointService.updatePoint(studio, user, refund.lecture.price);
-    
+
+    if (status === "approved") this.updatePoint(studio, user, refund.lecture.price);
+
     await this.refundRepository.save(refund);
 
     return { message: "환불 상태 갱신" };
@@ -196,6 +201,19 @@ export class PointTransactionService {
         throw new BadRequestException("유효하지 않은 거래 유형입니다.");
     }
     await this.pointTransactionRepository.save(transaction);
+  }
+
+
+  // 순환참조 문제로 인해 임시 구현
+  async updatePoint(studio: Studio, user: User, amount: number) {
+    const point = this.pointRepository.create({
+      point: amount,
+      expiration: new Date(Date.now() + 24 * 60 * 60 * 1000 * studio.pointExpiration),
+      user: user,
+      studio: studio
+    });
+
+    await this.pointRepository.save(point);
   }
 
   groupByDate(data: Array<any>) {

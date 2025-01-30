@@ -8,8 +8,8 @@ import { Ticket } from '../ticket/entities/ticket.entity';
 import { Studio } from '../studio/entities/studio.entity';
 import { PointTransaction } from '../point-transaction/entities/point-transaction.entity';
 import { PointTransactionService } from '../point-transaction/point-transaction.service';
-import { Refund } from './refund.entity';
 import { Lecture } from '../lecture/entities/lecture.entity';
+import { Refund } from '../point-transaction/entities/refund.entity';
 
 @Module({
   imports: [

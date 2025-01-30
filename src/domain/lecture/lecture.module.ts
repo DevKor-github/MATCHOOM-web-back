@@ -9,8 +9,8 @@ import { Media } from 'src/application/media/entities/media.entity';
 import { Point } from '../point/entities/point.entity';
 import { PointTransactionService } from '../point-transaction/point-transaction.service';
 import { PointTransaction } from '../point-transaction/entities/point-transaction.entity';
-import { Refund } from '../point/refund.entity';
 import { Studio } from '../studio/entities/studio.entity';
+import { Refund } from '../point-transaction/entities/refund.entity';
 
 @Module({
   imports:[

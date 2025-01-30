@@ -3,7 +3,7 @@ import { Lecture } from "src/domain/lecture/entities/lecture.entity";
 import { Studio } from "src/domain/studio/entities/studio.entity";
 import { Column, CreateDateColumn, Entity, OneToMany, ManyToMany, PrimaryGeneratedColumn, Unique, OneToOne, JoinColumn } from "typeorm";
 import { PointTransaction } from "src/domain/point-transaction/entities/point-transaction.entity";
-import { Refund } from "src/domain/point/refund.entity";
+import { Refund } from "src/domain/point-transaction/entities/refund.entity";
 
 @Entity()
 @Unique(['oauthId', 'phone'])
