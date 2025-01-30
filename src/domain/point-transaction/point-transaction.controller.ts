@@ -26,7 +26,7 @@ export class PointTransactionController {
 
   @Get('refund/unsubmitted')
   @UseGuards(AuthGuard('jwt-access'))
-  @Docs('getRefund')
+  @Docs('getUnsubmittedRefund')
   async getUnsubmittedRefund(@Param('studioId') studioId: number, @User() user: UserPayload) {
     const userId = user.id;
     return await this.pointTransactionService.getPointTransactions(studioId, userId);
@@ -34,7 +34,7 @@ export class PointTransactionController {
 
   @Get('refund/submitted')
   @UseGuards(AuthGuard('jwt-access'))
-  @Docs('getRefund')
+  @Docs('getSubmittedRefund')
   async getSubmittedRefund(@Param('studioId') studioId: number, @User() user: UserPayload) {
     const userId = user.id;
     return await this.pointTransactionService.getSubmittedRefund(studioId, userId);

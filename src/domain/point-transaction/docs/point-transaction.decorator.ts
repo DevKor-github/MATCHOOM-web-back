@@ -6,7 +6,8 @@ import { GetHistoryResDto } from "../dtos/getHistory.dto";
 
 type EndPoints =
   | 'postRefund'
-  | 'getRefund'
+  | 'getUnsubmittedRefund'
+  | 'getSubmittedRefund'
   | 'updateRefund'
   | 'getHistory';
 
@@ -32,7 +33,7 @@ export function Docs(endPoint: EndPoints) {
         description: "유효하지 않은 access token"
       })
     );
-    case 'getRefund': return applyDecorators(
+    case 'getUnsubmittedRefund': return applyDecorators(
       ApiOperation({
         description: "환불 신청 목록 조회",
         summary: "환불 신청 목록 조회"
@@ -44,6 +45,23 @@ export function Docs(endPoint: EndPoints) {
       }),
       ApiOkResponse({
         description: "환불 신청 목록 조회 성공"
+      }),
+      ApiUnauthorizedResponse({
+        description: "유효하지 않은 access token"
+      })
+    );
+    case 'getSubmittedRefund': return applyDecorators(
+      ApiOperation({
+        description: "환불 상태 목록 조회",
+        summary: "환불 상태 목록 조회"
+      }),
+      ApiBearerAuth(),
+      ApiParam({
+        name: "studioId",
+        description: "스튜디오 id"
+      }),
+      ApiOkResponse({
+        description: "환불 상태 목록 조회 성공"
       }),
       ApiUnauthorizedResponse({
         description: "유효하지 않은 access token"
