@@ -9,6 +9,7 @@ import { Refund } from './entities/refund.entity';
 import { Ticket } from '../ticket/entities/ticket.entity';
 import { UpdateRefundReqDto } from './dtos/updateRefund.dto';
 import { PointService } from '../point/point.service';
+import { GetHistoryResDto } from './dtos/getHistory.dto';
 
 @Injectable()
 export class PointTransactionService {
@@ -86,17 +87,16 @@ export class PointTransactionService {
         'lecture.name',
         'lecture.description',
         `CONCAT('${process.env.AWS_S3_CLOUDFRONT_DOMAIN}/images/${studioId}/', lecture.file) as file`,
-        'point_transaction.created_at'
+        'point_transaction.created_at',
+        'point_transaction.id'
       ])
-      .where('point_transaction.studioId = :studioId', { studioId })
-      .andWhere('point_transaction.userId = :userId', { userId })
+      .where('point_transaction.studio = :studioId', { studioId })
+      .andWhere('point_transaction.user = :userId', { userId })
       .andWhere('point_transaction.type = :type', { type })
       .orderBy('point_transaction.created_at', 'DESC')
-      .getMany();
+      .getRawMany();
 
-    const result = this.groupByDate(transactions);
-
-    return result;
+    return transactions;
   }
 
   async getRefundForStudio(studioId: number) {
@@ -145,6 +145,7 @@ export class PointTransactionService {
     const pointTransactions = await this.pointTransactionRepository.createQueryBuilder('point_transaction')
       .leftJoinAndSelect('point_transaction.lecture', 'lecture')
       .leftJoinAndSelect('point_transaction.ticket', 'ticket')
+      .leftJoinAndSelect('lecture.file', 'media')
       .select([
         'point_transaction.id',
         'point_transaction.amount',
@@ -153,7 +154,7 @@ export class PointTransactionService {
         'lecture.id',
         'lecture.name',
         'lecture.description',
-        `CONCAT('${process.env.AWS_S3_CLOUDFRONT_DOMAIN}/images/${studioId}/', lecture.file) as file`,
+        `CONCAT('${process.env.AWS_S3_CLOUDFRONT_DOMAIN}/images/${studioId}/', media.filename) as file`,
         'ticket.id',
         'ticket.point',
         'ticket.price'
@@ -163,38 +164,7 @@ export class PointTransactionService {
       .orderBy('point_transaction.created_at', 'DESC')
       .getRawMany();
 
-    const formattedTransactions = pointTransactions.map(transaction => {
-      console.log(transaction)
-      if (transaction.point_transaction_type === 'purchase') {
-        return {
-          id: transaction.point_transaction_id,
-          amount: transaction.point_transaction_amount,
-          type: transaction.point_transaction_type,
-          createdAt: transaction.point_transaction_created_at,
-          lecture: {
-            id: transaction['lecture_id'],
-            name: transaction['lecture_name'],
-            description: transaction['lecture_description'],
-            file: transaction.file
-          }
-        };
-      } else if (transaction.point_transaction_type === 'charge') {
-        return {
-          id: transaction.point_transaction_id,
-          amount: transaction.point_transaction_amount,
-          type: transaction.point_transaction_type,
-          createdAt: transaction.point_transaction_created_at,
-          ticket: {
-            id: transaction['ticket_id'],
-            point: transaction['ticket_point'],
-            price: transaction['ticket_price']
-          }
-        };
-      }
-      return null;
-    }).filter(transaction => transaction !== null);
-
-    return formattedTransactions;
+    return pointTransactions.map(transaction => new GetHistoryResDto(transaction));
   }
 
   async createTransaction(user: User, studio: Studio, type: 'charge' | 'purchase', ticket?: Ticket, lecture?: Lecture) {
