@@ -3,6 +3,8 @@ import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiUnaut
 import { PostRefundReqDto } from "../dtos/postRefund.dto";
 import { UpdateRefundReqDto } from "../dtos/updateRefund.dto";
 import { GetHistoryResDto } from "../dtos/getHistory.dto";
+import { GetPointTransactionsResDto } from "../dtos/getPointTransactions.dto";
+import { GetSubmittedRefundResDto } from "../dtos/getSubmittedRefund.dto";
 
 type EndPoints =
   | 'postRefund'
@@ -44,6 +46,7 @@ export function Docs(endPoint: EndPoints) {
         description: "스튜디오 id"
       }),
       ApiOkResponse({
+        type: GetPointTransactionsResDto,
         description: "환불 신청 목록 조회 성공"
       }),
       ApiUnauthorizedResponse({
@@ -61,6 +64,7 @@ export function Docs(endPoint: EndPoints) {
         description: "스튜디오 id"
       }),
       ApiOkResponse({
+        type: GetSubmittedRefundResDto,
         description: "환불 상태 목록 조회 성공"
       }),
       ApiUnauthorizedResponse({
