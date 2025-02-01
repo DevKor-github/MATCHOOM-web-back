@@ -1,7 +1,7 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PointTransaction } from './entities/point-transaction.entity';
-import { DeepPartial, Repository } from 'typeorm';
+import { DataSource, DeepPartial, QueryRunner, Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import { Studio } from '../studio/entities/studio.entity';
 import { Lecture } from '../lecture/entities/lecture.entity';
@@ -13,6 +13,7 @@ import { GetHistoryResDto } from './dtos/getHistory.dto';
 import { Point } from '../point/entities/point.entity';
 import { GetSubmittedRefundResDto } from './dtos/getSubmittedRefund.dto';
 import { GetPointTransactionsResDto } from './dtos/getPointTransactions.dto';
+import { RefundStatus } from './enums/refund-status.enum';
 
 @Injectable()
 export class PointTransactionService {
@@ -28,7 +29,8 @@ export class PointTransactionService {
     @InjectRepository(Lecture)
     private lectuerRepository: Repository<Lecture>,
     @InjectRepository(Point)
-    private pointRepository: Repository<Point>
+    private pointRepository: Repository<Point>,
+    private dataSource: DataSource
   ) { }
 
   async createRefund(studioId: number, lectureId: number, userId: number) {
@@ -141,16 +143,28 @@ export class PointTransactionService {
     if (!user) throw new NotFoundException("존재하지 않는 사용자 입니다.");
 
     const studio = await this.studioRepository.findOne({ where: { id: studioId } });
-
-    if (user.studio.id !== refund.studio.id) throw new UnauthorizedException("해당 스튜디오의 관리자가 아닙니다.");
+    if (user.studio !== refund.studio) throw new UnauthorizedException("해당 스튜디오의 관리자가 아닙니다.");
 
     refund.status = status || refund.status;
 
-    if (status === "approved") this.updatePoint(studio, user, refund.lecture.price);
+    console.log(status);
 
-    await this.refundRepository.save(refund);
+    const queryRunner = this.dataSource.createQueryRunner();
 
-    return { message: "환불 상태 갱신" };
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      await queryRunner.manager.save(Refund, refund);
+      console.log(status);
+      if (status === RefundStatus.Approved) await this.updatePoint(studio, user, refund.lecture.price, queryRunner);
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      console.log(err);
+      await queryRunner.rollbackTransaction();
+    } finally {
+      console.log(1);
+      await queryRunner.release();
+    }
   }
 
   async getHistory(studioId: number, userId: number) {
@@ -212,7 +226,7 @@ export class PointTransactionService {
 
 
   // 순환참조 문제로 인해 임시 구현
-  async updatePoint(studio: Studio, user: User, amount: number) {
+  async updatePoint(studio: Studio, user: User, amount: number, queryRunner: QueryRunner) {
     const point = this.pointRepository.create({
       point: amount,
       expiration: new Date(Date.now() + 24 * 60 * 60 * 1000 * studio.pointExpiration),
@@ -220,7 +234,7 @@ export class PointTransactionService {
       studio: studio
     });
 
-    await this.pointRepository.save(point);
+    await queryRunner.manager.save(Point, point);
   }
 
   groupByDate(data: Array<any>) {

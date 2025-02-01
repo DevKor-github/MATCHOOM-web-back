@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsEnum, IsNotEmpty, IsNumber } from "class-validator";
+import { RefundStatus } from "../enums/refund-status.enum";
 
 class UpdateRefundReqDto {
   @IsNumber()
@@ -7,10 +8,10 @@ class UpdateRefundReqDto {
   @ApiProperty({ example: 1 })
   refundId: number;
 
-  @IsString()
+  @IsEnum(RefundStatus)
   @IsNotEmpty()
   @ApiProperty({ example: "approved" })
-  status: 'pending' | 'approved' | 'rejected';
+  status: RefundStatus;
 }
 
 export { UpdateRefundReqDto }
