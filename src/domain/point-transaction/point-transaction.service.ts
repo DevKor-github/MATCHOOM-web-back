@@ -147,24 +147,22 @@ export class PointTransactionService {
 
     refund.status = status || refund.status;
 
-    console.log(status);
-
     const queryRunner = this.dataSource.createQueryRunner();
 
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
       await queryRunner.manager.save(Refund, refund);
-      console.log(status);
       if (status === RefundStatus.Approved) await this.updatePoint(studio, user, refund.lecture.price, queryRunner);
+      
       await queryRunner.commitTransaction();
     } catch (err) {
-      console.log(err);
       await queryRunner.rollbackTransaction();
     } finally {
-      console.log(1);
       await queryRunner.release();
     }
+
+    return { message: "환불 상태 갱신 성공" };
   }
 
   async getHistory(studioId: number, userId: number) {

@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Point } from './entities/point.entity';
-import { MoreThan, Repository } from 'typeorm';
+import { DataSource, MoreThan, Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import { Ticket } from '../ticket/entities/ticket.entity';
 import { Studio } from '../studio/entities/studio.entity';
 import { GetPointResDto } from './dtos/getPoint.dto';
-import { PointTransactionService } from '../point-transaction/point-transaction.service';
+import { PointTransaction } from '../point-transaction/entities/point-transaction.entity';
 
 @Injectable()
 export class PointService {
@@ -19,7 +19,9 @@ export class PointService {
     private ticketRepository: Repository<Ticket>,
     @InjectRepository(Studio)
     private studioRepository: Repository<Studio>,
-    private pointTransactionService: PointTransactionService
+    @InjectRepository(PointTransaction)
+    private pointTransactionRepository: Repository<PointTransaction>,
+    private dataSource: DataSource
   ) { }
 
   async getMyPoints(studioId: number, userId: number) {
@@ -79,8 +81,29 @@ export class PointService {
       studio: studio
     });
 
-    await this.pointRepository.save(point);
-    await this.pointTransactionService.createTransaction(user, studio, "charge", ticket);
+    const pointTransaction = this.pointTransactionRepository.create({
+      amount: amount,
+      user: user,
+      type: "charge",
+      studio: studio,
+      ticket: ticket
+    });
+
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      await queryRunner.manager.save(Point, point);
+      await queryRunner.manager.save(PointTransaction, pointTransaction);
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
 
     return { message: "포인트 충전 성공" };
   }
