@@ -2,6 +2,7 @@ import { Studio } from "src/domain/studio/entities/studio.entity";
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm"
 import { User } from "src/domain/user/entities/user.entity";
 import { Media } from "src/application/media/entities/media.entity";
+import { PointTransaction } from "src/domain/point-transaction/entities/point-transaction.entity";
 
 @Entity()
 export class Lecture{
@@ -59,4 +60,7 @@ export class Lecture{
 
     @ManyToOne(() => Media, (media) => media.lectures)
     file: Media
+
+    @OneToMany(() => PointTransaction, pointTransaction => pointTransaction.lecture)
+    pointTransactions: PointTransaction[];
 }

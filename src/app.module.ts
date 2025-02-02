@@ -12,6 +12,7 @@ import { AuthModule } from './application/auth/auth.module';
 import { MediaModule } from './application/media/media.module';
 import { TicketModule } from './domain/ticket/ticket.module';
 import { PointModule } from './domain/point/point.module';
+import { PointTransactionModule } from './domain/point-transaction/point-transaction.module';
 
 @Module({
   imports: [
@@ -31,7 +32,7 @@ import { PointModule } from './domain/point/point.module';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: process.env.JWT_EXPIRES_IN }
     }),
-    StudioModule, LectureModule, UserModule, AuthModule, MediaModule, TicketModule, PointModule],
+    StudioModule, LectureModule, UserModule, AuthModule, MediaModule, TicketModule, PointModule, PointTransactionModule],
   controllers: [AppController],
   providers: [AppService],
 })
