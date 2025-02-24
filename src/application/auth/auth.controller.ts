@@ -26,7 +26,7 @@ export class AuthController {
     const oauthId = req.user;
     const { id, isOnboarding } = await this.userService.getOrCreateUser(oauthId);
     const { refreshToken, accessToken } = await this.authService.generateTokens(id, isOnboarding);
-    // res.cookie('refreshToken', refreshToken, CookieConfig.refreshToken);
+    res.cookie('refreshToken', refreshToken, CookieConfig.refreshToken);
 
     return res.json({ refreshToken, accessToken, isOnboarding });
   }
@@ -38,7 +38,7 @@ export class AuthController {
     const { id, isOnboarding } = user;
     const { accessToken, refreshToken } = await this.authService.register(id, isOnboarding, registerReqDto);
 
-    // res.cookie('refreshToken', refreshToken, CookieConfig.refreshToken);
+    res.cookie('refreshToken', refreshToken, CookieConfig.refreshToken);
 
     return res.json({ refreshToken, accessToken });
   }
