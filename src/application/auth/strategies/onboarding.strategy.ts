@@ -7,24 +7,25 @@ import { Request } from 'express';
 @Injectable()
 export class RegisterStrategy extends PassportStrategy(Strategy, 'register') {
   constructor() {
-    /*
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request) => { return request?.cookies?.refreshToken }
       ]),
       secretOrKey: process.env.JWT_REFRESH_SECRET,
+      passReqToCallback: true
     });
-    */
 
+    /*
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: process.env.JWT_REFRESH_SECRET,
       passReqToCallback: true
     });
+    */
   }
 
   async validate(req: Request, payload: JwtPayload) {
-    const refreshToken = req.headers.authorization.split(' ')[1];
+    const refreshToken = req?.cookies?.isOnboarding;
     if (!refreshToken) throw new UnauthorizedException("refresh token을 수신하지 못했습니다.");
 
     const { sub, isOnboarding } = payload;
